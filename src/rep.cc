@@ -600,7 +600,7 @@ void REP::Translator::calculate_face_unit_normal()
 
             auto& curSN = curCell->n.at(j);
             curSN = curFace->n01;
-            if (approximate_r.dot(curSN) < 0)
+            if (approximate_r.dot(curSN) < 0.0)
                 curSN *= -1.0;
         }
     }
@@ -618,12 +618,34 @@ void REP::Translator::calculate_face_unit_normal()
             const auto& curSN = curCell->n.at(j);
 
             if (curFace->c0 == i)
+            {
                 curFace->n01 = curSN;
+                if (curFace->c1 == 0)
+                {
+                    curFace->n10 = curSN;
+                    curFace->n10 *= -1.0;
+                }
+            }
             else if (curFace->c1 == i)
+            {
                 curFace->n10 = curSN;
+                if (curFace->c0 == 0)
+                {
+                    curFace->n01 = curSN;
+                    curFace->n01 *= -1.0;
+                }
+            }
             else
                 throw internal_error(-6, "Empty connectivity detected");
         }
+    }
+
+    for (auto f : m_face)
+    {
+        static const auto EPS = std::numeric_limits<double>::epsilon();
+        const auto ans = f->n01.dot(f->n10);
+        if (std::fabs(ans + 1.0) > EPS)
+            throw internal_error(f->index, "Face unit norm vectors not match");
     }
 }
 
@@ -683,6 +705,63 @@ REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
     m_node.resize(num_of_node, nullptr);
     m_face.resize(num_of_face, nullptr);
     m_cell.resize(num_of_cell, nullptr);
+
+    operation_log << "Extracting description from ZONE sections ..." << std::endl;
+    std::vector<size_t> zone_idx;
+    m_zone.clear();
+    for (size_t i0 = 0; i0 < num_of_section; ++i0)
+    {
+        auto curObj = dynamic_cast<XF::ZONE*>(mesh->at(i0));
+        if (curObj == nullptr)
+            continue;
+
+        if (XF::ZONE::str2idx(curObj->type()) == XF::ZONE::INTERIOR)
+            continue;
+
+        const auto curZoneIdx = curObj->zone();
+
+        for (size_t j0 = 0; j0 < num_of_section; ++j0)
+        {
+            auto curObj_aux = dynamic_cast<XF::FACE*>(mesh->at(j0));
+            if (curObj_aux == nullptr)
+                continue;
+
+            if (curObj_aux->zone() == curZoneIdx)
+            {
+                m_zone.emplace_back(curObj->name());
+                zone_idx.push_back(curZoneIdx);
+                break;
+            }
+        }
+    }
+    for (size_t i = 0; i < zone_idx.size(); ++i)
+    {
+        const auto curZoneIdx = zone_idx[i];
+        auto& cz = m_zone.at(i);
+
+        for (size_t j = 0; j < num_of_section; ++j)
+        {
+            auto curObj = dynamic_cast<XF::FACE*>(mesh->at(j));
+            if (curObj == nullptr)
+                continue;
+
+            if (curObj->zone() == curZoneIdx)
+            {
+                cz.includedFace.resize(curObj->num());
+                for (size_t k = 0; k < cz.includedFace.size(); ++k)
+                    cz.includedFace[k] = curObj->first_index() + k;
+
+                std::set<size_t> nl;
+                for (size_t k = 0; k < cz.includedFace.size(); ++k)
+                {
+                    const auto& connection = curObj->at(k);
+                    for (const auto& e : connection.n)
+                        nl.insert(e);
+                }
+                cz.includedNode.assign(nl.begin(), nl.end());
+            }
+        }
+    }
 
     operation_log << "Extracting basic description from NODE sections ..." << std::endl;
     for (size_t i0 = 0; i0 < num_of_section; ++i0)
@@ -760,63 +839,6 @@ REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
 
     operation_log << "Calculating CELL volume and centroid ..." << std::endl;
     calculate_cell_geom_var();
-
-    operation_log << "Parsing ZONE sections ..." << std::endl;
-    std::vector<size_t> zone_idx;
-    m_zone.clear();
-    for (size_t i0 = 0; i0 < num_of_section; ++i0)
-    {
-        auto curObj = dynamic_cast<XF::ZONE*>(mesh->at(i0));
-        if (curObj == nullptr)
-            continue;
-
-        if (XF::ZONE::str2idx(curObj->type()) == XF::ZONE::INTERIOR)
-            continue;
-
-        const auto curZoneIdx = curObj->zone();
-
-        for (size_t j0 = 0; j0 < num_of_section; ++j0)
-        {
-            auto curObj_aux = dynamic_cast<XF::FACE*>(mesh->at(j0));
-            if (curObj_aux == nullptr)
-                continue;
-
-            if (curObj_aux->zone() == curZoneIdx)
-            {
-                m_zone.emplace_back(curObj->name());
-                zone_idx.push_back(curZoneIdx);
-                break;
-            }
-        }
-    }
-    for (size_t i = 0; i < zone_idx.size(); ++i)
-    {
-        const auto curZoneIdx = zone_idx[i];
-        auto& cz = m_zone.at(i);
-
-        for (size_t j = 0; j < num_of_section; ++j)
-        {
-            auto curObj = dynamic_cast<XF::FACE*>(mesh->at(j));
-            if (curObj == nullptr)
-                continue;
-
-            if (curObj->zone() == curZoneIdx)
-            {
-                cz.includedFace.resize(curObj->num());
-                for (size_t k = 0; k < cz.includedFace.size(); ++k)
-                    cz.includedFace[k] = curObj->first_index() + k;
-
-                std::set<size_t> nl;
-                for (size_t k = 0; k < cz.includedFace.size(); ++k)
-                {
-                    const auto& connection = curObj->at(k);
-                    for (const auto& e : connection.n)
-                        nl.insert(e);
-                }
-                cz.includedNode.assign(nl.begin(), nl.end());
-            }
-        }
-    }
 
     operation_log << "Finished!" << std::endl;
 }
