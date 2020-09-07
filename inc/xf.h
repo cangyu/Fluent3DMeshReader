@@ -192,7 +192,7 @@ namespace XF
             return m_msg;
         }
 
-        void repr(std::ostream& out)
+        void repr(std::ostream& out) override
         {
             out << "(" << std::dec << identity() << " \"" << str() << "\")" << std::endl;
         }
@@ -227,18 +227,18 @@ namespace XF
     public:
         DIMENSION() = delete;
 
-        DIMENSION(int dim, bool id3d = true) : SECTION(SECTION::DIMENSION), DIM(dim, id3d) {}
+        explicit DIMENSION(int dim, bool id3d = true) : SECTION(SECTION::DIMENSION), DIM(dim, id3d) {}
 
         DIMENSION(const DIMENSION& rhs) : SECTION(SECTION::DIMENSION), DIM(rhs.dimension(), rhs.is3D()) {}
 
         ~DIMENSION() = default;
 
-        int ND() const
+        [[nodiscard]] int ND() const
         {
             return dimension();
         }
 
-        void repr(std::ostream& out)
+        void repr(std::ostream& out) override
         {
             out << "(" << std::dec << identity() << " " << ND() << ")" << std::endl;
         }
@@ -347,7 +347,7 @@ namespace XF
             return m_coordinate.at(loc_idx);
         }
 
-        const VEC& at(size_t loc_idx) const
+        [[nodiscard]] const VEC& at(size_t loc_idx) const
         {
             return m_coordinate.at(loc_idx);
         }
@@ -382,7 +382,7 @@ namespace XF
             return dimension();
         }
 
-        void repr(std::ostream& out);
+        void repr(std::ostream& out) override;
     };
 
     class CELL : public RANGE
@@ -489,7 +489,7 @@ namespace XF
                 return m_elem;
         }
 
-        int at(size_t loc_idx) const
+        [[nodiscard]] int at(size_t loc_idx) const
         {
             if (m_elem == MIXED)
                 return m_desc.at(loc_idx);
@@ -498,7 +498,7 @@ namespace XF
         }
 
         /// Type of cells within this section: DEAD cell, FLUID cell or SOLID cell.
-        int type() const
+        [[nodiscard]] int type() const
         {
             return m_type;
         }
@@ -509,7 +509,7 @@ namespace XF
         }
 
         /// General description of ALL cell elements within this section.
-        int element_type() const
+        [[nodiscard]] int element_type() const
         {
             return  m_elem;
         }
@@ -533,20 +533,16 @@ namespace XF
 
         CONNECTIVITY() : c{ 0, 0 } {}
 
-        CONNECTIVITY(const CONNECTIVITY& rhs) : n(rhs.n)
-        {
-            c[0] = rhs.c[0];
-            c[1] = rhs.c[1];
-        }
+        CONNECTIVITY(const CONNECTIVITY& rhs) : n(rhs.n), c{rhs.c[0], rhs.c[1]} {}
 
         ~CONNECTIVITY() = default;
 
-        size_t c0() const
+        [[nodiscard]] size_t c0() const
         {
             return c[0];
         }
 
-        size_t c1() const
+        [[nodiscard]] size_t c1() const
         {
             return c[1];
         }
@@ -657,13 +653,13 @@ namespace XF
             return m_desc.at(loc_idx);
         }
 
-        const CONNECTIVITY& at(size_t loc_idx) const
+        [[nodiscard]] const CONNECTIVITY& at(size_t loc_idx) const
         {
             return m_desc.at(loc_idx);
         }
 
         /// B.C. of faces within this group.
-        int bc_type() const
+        [[nodiscard]] int bc_type() const
         {
             return m_bc;
         }
@@ -674,7 +670,7 @@ namespace XF
         }
 
         /// Shape of faces within this group.
-        int face_type() const
+        [[nodiscard]] int face_type() const
         {
             return m_face;
         }
@@ -751,7 +747,7 @@ namespace XF
         ~ZONE() = default;
 
         /// Index of this zone, may be any non-consecutive positive integer.
-        size_t zone() const
+        [[nodiscard]] size_t zone() const
         {
             return m_zoneID;
         }
@@ -762,7 +758,7 @@ namespace XF
         }
 
         /// B.C. string literal.
-        const std::string& type() const
+        [[nodiscard]] const std::string& type() const
         {
             return m_zoneType;
         }
@@ -773,7 +769,7 @@ namespace XF
         }
 
         /// Name of this zone.
-        const std::string& name() const
+        [[nodiscard]] const std::string& name() const
         {
             return m_zoneName;
         }
@@ -784,7 +780,7 @@ namespace XF
         }
 
         /// Domain ID, NOT used.
-        int domain() const
+        [[nodiscard]] int domain() const
         {
             return m_domainID;
         }
@@ -794,7 +790,7 @@ namespace XF
             return m_domainID;
         }
 
-        void repr(std::ostream& out)
+        void repr(std::ostream& out) override
         {
             out << std::dec << "(" << identity() << " (" << zone() << " " << type() << " " << name() << ")())" << std::endl;
         }
@@ -825,32 +821,32 @@ namespace XF
         }
 
         /// I/O
-        void readFromFile(const std::string& src, std::ostream& fout);
+        void readFromFile(const std::string& src, std::ostream& f_out);
 
         void writeToFile(const std::string& dst) const;
 
         /// Num of elements
-        size_t nNode() const
+        [[nodiscard]] size_t nNode() const
         {
             return m_totalNodeNum;
         }
 
-        size_t nFace() const
+        [[nodiscard]] size_t nFace() const
         {
             return m_totalFaceNum;
         }
 
-        size_t nCell() const
+        [[nodiscard]] size_t nCell() const
         {
             return m_totalCellNum;
         }
 
-        size_t nZone() const
+        [[nodiscard]] size_t nZone() const
         {
             return m_totalZoneNum;
         }
 
-        size_t size() const
+        [[nodiscard]] size_t size() const
         {
             return m_content.size();
         }

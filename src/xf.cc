@@ -453,21 +453,21 @@ namespace XF
         {
             for (size_t i = 0; i < N; ++i)
             {
-                const auto& loc_cnect = at(i);
-                out << " " << loc_cnect.n.size();
-                for (auto e : loc_cnect.n)
+                const auto& loc_connect = at(i);
+                out << " " << loc_connect.n.size();
+                for (auto e : loc_connect.n)
                     out << " " << e;
-                out << " " << loc_cnect.c[0] << " " << loc_cnect.c[1] << std::endl;
+                out << " " << loc_connect.c[0] << " " << loc_connect.c[1] << std::endl;
             }
         }
         else
         {
             for (size_t i = 0; i < N; ++i)
             {
-                const auto& loc_cnect = at(i);
-                for (auto e : loc_cnect.n)
+                const auto& loc_connect = at(i);
+                for (auto e : loc_connect.n)
                     out << " " << e;
-                out << " " << loc_cnect.c[0] << " " << loc_cnect.c[1] << std::endl;
+                out << " " << loc_connect.c[0] << " " << loc_connect.c[1] << std::endl;
             }
         }
 
@@ -595,7 +595,7 @@ namespace XF
             throw invalid_zone_type_str(zt);
     }
 
-    void MESH::readFromFile(const std::string& src, std::ostream& fout)
+    void MESH::readFromFile(const std::string& src, std::ostream& f_out)
     {
         // Open grid file
         std::ifstream fin(src);
@@ -661,7 +661,7 @@ namespace XF
                     if (tmp != 1)
                         throw std::runtime_error("Invalid \"first-index\" in NODE declaration!");
                     fin >> m_totalNodeNum;
-                    fout << "Total number of nodes: " << m_totalNodeNum << std::endl;
+                    f_out << "Total number of nodes: " << m_totalNodeNum << std::endl;
                     fin >> tmp;
                     if (tmp != 0)
                         throw std::runtime_error("Invalid \"type\" in NODE declaration!");
@@ -683,7 +683,7 @@ namespace XF
                     auto e = new NODE(zone, first, last, tp, nd);
                     eat(fin, ')');
                     eat(fin, '(');
-                    fout << "Reading " << e->num() << " nodes in zone " << zone << " (from " << first << " to " << last << "), whose type is \"" << NODE::idx2str(tp) << "\"  ... ";
+                    f_out << "Reading " << e->num() << " nodes in zone " << zone << " (from " << first << " to " << last << "), whose type is \"" << NODE::idx2str(tp) << "\"  ... ";
 
                     if (nd != dimension())
                         throw std::runtime_error("Inconsistent with previous DIMENSION declaration!");
@@ -706,7 +706,7 @@ namespace XF
                     }
                     eat(fin, ')');
                     eat(fin, ')');
-                    fout << "Done!" << std::endl;
+                    f_out << "Done!" << std::endl;
                     add_entry(e);
                 }
                 skip_white(fin);
@@ -725,7 +725,7 @@ namespace XF
                     if (tmp != 1)
                         throw std::runtime_error("Invalid \"first-index\" in CELL declaration!");
                     fin >> m_totalCellNum;
-                    fout << "Total number of cells: " << m_totalCellNum << std::endl;
+                    f_out << "Total number of cells: " << m_totalCellNum << std::endl;
                     fin >> tmp;
                     if (tmp != 0)
                         throw std::runtime_error("Invalid \"type\" in CELL declaration!");
@@ -749,7 +749,7 @@ namespace XF
 
                     if (elem == 0)
                     {
-                        fout << "Reading " << e->num() << " mixed cells in zone " << zone << " (from " << first << " to " << last << ") ... ";
+                        f_out << "Reading " << e->num() << " mixed cells in zone " << zone << " (from " << first << " to " << last << ") ... ";
                         eat(fin, '(');
                         for (int i = first; i <= last; ++i)
                         {
@@ -760,10 +760,10 @@ namespace XF
                                 throw std::runtime_error("Invalid CELL-ELEM-TYPE: \"" + std::to_string(elem) + "\"");
                         }
                         eat(fin, ')');
-                        fout << "Done!" << std::endl;
+                        f_out << "Done!" << std::endl;
                     }
                     else
-                        fout << e->num() << " " << CELL::idx2str_elem(elem) << " in zone " << zone << " (from " << first << " to " << last << ")" << std::endl;
+                        f_out << e->num() << " " << CELL::idx2str_elem(elem) << " in zone " << zone << " (from " << first << " to " << last << ")" << std::endl;
 
                     eat(fin, ')');
                     add_entry(e);
@@ -783,7 +783,7 @@ namespace XF
                     if (tmp != 1)
                         throw std::runtime_error("Invalid \"first-index\" in FACE declaration!");
                     fin >> m_totalFaceNum;
-                    fout << "Total number of faces: " << m_totalFaceNum << std::endl;
+                    f_out << "Total number of faces: " << m_totalFaceNum << std::endl;
                     fin >> tmp;
                     char ndc = fin.get();
                     if (ndc != ')')
@@ -804,7 +804,7 @@ namespace XF
                     auto e = new FACE(zone, first, last, bc, face);
                     eat(fin, ')');
                     eat(fin, '(');
-                    fout << "Reading " << e->num() << " " << FACE::idx2str(face) << " faces in zone " << zone << " (from " << first << " to " << last << "), whose B.C. is \"" << BC::idx2str(bc) << "\" ... ";
+                    f_out << "Reading " << e->num() << " " << FACE::idx2str(face) << " faces in zone " << zone << " (from " << first << " to " << last << "), whose B.C. is \"" << BC::idx2str(bc) << "\" ... ";
 
                     std::vector<size_t> tmp_n;
                     size_t tmp_c[2];
@@ -844,7 +844,7 @@ namespace XF
                     }
                     eat(fin, ')');
                     eat(fin, ')');
-                    fout << "Done!" << std::endl;
+                    f_out << "Done!" << std::endl;
                     add_entry(e);
                 }
                 skip_white(fin);
@@ -857,17 +857,17 @@ namespace XF
                 std::string ztp;
                 fin >> ztp;
                 skip_white(fin);
-                std::string zname;
+                std::string z_name;
                 char t0;
                 while ((t0 = fin.get()) != ')')
-                    zname.push_back(t0);
+                    z_name.push_back(t0);
                 eat(fin, '(');
                 eat(fin, ')');
                 eat(fin, ')');
-                auto e = new ZONE(zone, ztp, zname);
+                auto e = new ZONE(zone, ztp, z_name);
                 add_entry(e);
                 skip_white(fin);
-                fout << "ZONE " << e->zone() << ", named " << R"(")" << e->name() << R"(", )" << "is " << R"(")" << e->type() << R"(")" << std::endl;
+                f_out << "ZONE " << e->zone() << ", named " << R"(")" << e->name() << R"(", )" << "is " << R"(")" << e->type() << R"(")" << std::endl;
                 ++m_totalZoneNum;
             }
             else
@@ -876,7 +876,7 @@ namespace XF
 
         // Close grid file
         fin.close();
-        fout << "Done!" << std::endl;
+        f_out << "Done!" << std::endl;
     }
 
     void MESH::writeToFile(const std::string& dst) const
@@ -891,15 +891,15 @@ namespace XF
             throw std::runtime_error("Invalid num of contents.");
 
         /// Open grid file
-        std::ofstream fout(dst);
-        if (fout.fail())
+        std::ofstream f_out(dst);
+        if (f_out.fail())
             throw std::runtime_error("Failed to open output grid file: " + dst);
 
         /// Write until dimension declaration
         size_t i = 0;
         while (true)
         {
-            m_content[i]->repr(fout);
+            m_content[i]->repr(f_out);
             bool flag = dynamic_cast<DIMENSION*>(m_content[i]) != nullptr;
             ++i;
             if (flag)
@@ -907,21 +907,21 @@ namespace XF
         }
 
         /// Declaration of NODE, FACE, CELL
-        fout << "(" << std::dec << SECTION::NODE << " (";
-        fout << std::hex << 0 << " " << 1 << " " << m_totalNodeNum << " ";
-        fout << std::dec << 0 << " " << (m_is3D ? 3 : 2) << "))" << std::endl;
-        fout << "(" << std::dec << SECTION::CELL << " (";
-        fout << std::hex << 0 << " " << 1 << " " << m_totalCellNum << " ";
-        fout << std::dec << 0 << " " << 0 << "))" << std::endl;
-        fout << "(" << std::dec << SECTION::FACE << " (";
-        fout << std::hex << 0 << " " << 1 << " " << m_totalFaceNum << " ";
-        fout << std::dec << 0 << " " << 0 << "))" << std::endl;
+        f_out << "(" << std::dec << SECTION::NODE << " (";
+        f_out << std::hex << 0 << " " << 1 << " " << m_totalNodeNum << " ";
+        f_out << std::dec << 0 << " " << (m_is3D ? 3 : 2) << "))" << std::endl;
+        f_out << "(" << std::dec << SECTION::CELL << " (";
+        f_out << std::hex << 0 << " " << 1 << " " << m_totalCellNum << " ";
+        f_out << std::dec << 0 << " " << 0 << "))" << std::endl;
+        f_out << "(" << std::dec << SECTION::FACE << " (";
+        f_out << std::hex << 0 << " " << 1 << " " << m_totalFaceNum << " ";
+        f_out << std::dec << 0 << " " << 0 << "))" << std::endl;
 
         /// Contents
         for (; i < m_content.size(); ++i)
-            m_content[i]->repr(fout);
+            m_content[i]->repr(f_out);
 
         /// Close grid file
-        fout.close();
+        f_out.close();
     }
 }
