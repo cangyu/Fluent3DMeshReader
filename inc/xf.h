@@ -23,14 +23,14 @@ namespace XF
 {
     struct wrong_index : public std::logic_error
     {
-        wrong_index(int idx, const std::string &reason) : std::logic_error("\"" + std::to_string(idx) + "\" " + reason + ".") {}
+        wrong_index(int idx, const std::string& reason) : std::logic_error("\"" + std::to_string(idx) + "\" " + reason + ".") {}
 
-        wrong_index(size_t idx, const std::string &reason) : std::logic_error("\"" + std::to_string(idx) + "\" " + reason + ".") {}
+        wrong_index(size_t idx, const std::string& reason) : std::logic_error("\"" + std::to_string(idx) + "\" " + reason + ".") {}
     };
 
     struct wrong_string : public std::logic_error
     {
-        wrong_string(const std::string & str, const std::string &reason) : std::logic_error("\"" + str + "\" " + reason + ".") {}
+        wrong_string(const std::string& str, const std::string& reason) : std::logic_error("\"" + str + "\" " + reason + ".") {}
     };
 
     class DIM
@@ -68,7 +68,7 @@ namespace XF
             m_is3D = is3d;
         }
 
-        DIM(const DIM &rhs) = default;
+        DIM(const DIM& rhs) = default;
 
         virtual ~DIM() = default;
 
@@ -109,11 +109,11 @@ namespace XF
             m_identity = id;
         }
 
-        SECTION(const SECTION &rhs) = default;
+        SECTION(const SECTION& rhs) = default;
 
         virtual ~SECTION() = default;
 
-        virtual void repr(std::ostream &out) = 0;
+        virtual void repr(std::ostream& out) = 0;
 
         [[nodiscard]] int identity() const
         {
@@ -131,7 +131,7 @@ namespace XF
 
         struct invalid_bc_str : public wrong_string
         {
-            explicit invalid_bc_str(const std::string &s) : wrong_string(s, "is not a valid B.C. string") {}
+            explicit invalid_bc_str(const std::string& s) : wrong_string(s, "is not a valid B.C. string") {}
         };
 
     public:
@@ -161,11 +161,11 @@ namespace XF
 
         static bool isValidIdx(int x);
 
-        static bool isValidStr(const std::string &x);
+        static bool isValidStr(const std::string& x);
 
-        static const std::string &idx2str(int x);
+        static const std::string& idx2str(int x);
 
-        static int str2idx(const std::string &x);
+        static int str2idx(const std::string& x);
     };
 
     class STR : public SECTION
@@ -176,23 +176,23 @@ namespace XF
     public:
         STR() = delete;
 
-        STR(int id, const std::string &msg) : SECTION(id), m_msg(msg) {}
+        STR(int id, const std::string& msg) : SECTION(id), m_msg(msg) {}
 
-        STR(const STR &rhs) : SECTION(rhs.identity()), m_msg(rhs.m_msg) {}
+        STR(const STR& rhs) : SECTION(rhs.identity()), m_msg(rhs.m_msg) {}
 
         virtual ~STR() = default;
 
-        [[nodiscard]] const std::string &str() const
+        [[nodiscard]] const std::string& str() const
         {
             return m_msg;
         }
 
-        std::string &str()
+        std::string& str()
         {
             return m_msg;
         }
 
-        void repr(std::ostream &out)
+        void repr(std::ostream& out)
         {
             out << "(" << std::dec << identity() << " \"" << str() << "\")" << std::endl;
         }
@@ -203,9 +203,9 @@ namespace XF
     public:
         COMMENT() = delete;
 
-        explicit COMMENT(const std::string &info) : STR(SECTION::COMMENT, info) {}
+        explicit COMMENT(const std::string& info) : STR(SECTION::COMMENT, info) {}
 
-        COMMENT(const COMMENT &rhs) : STR(SECTION::COMMENT, rhs.str()) {}
+        COMMENT(const COMMENT& rhs) : STR(SECTION::COMMENT, rhs.str()) {}
 
         ~COMMENT() = default;
     };
@@ -215,9 +215,9 @@ namespace XF
     public:
         HEADER() = delete;
 
-        explicit HEADER(const std::string &info) : STR(SECTION::HEADER, info) {}
+        explicit HEADER(const std::string& info) : STR(SECTION::HEADER, info) {}
 
-        HEADER(const HEADER &rhs) : STR(SECTION::HEADER, rhs.str()) {}
+        HEADER(const HEADER& rhs) : STR(SECTION::HEADER, rhs.str()) {}
 
         ~HEADER() = default;
     };
@@ -229,7 +229,7 @@ namespace XF
 
         DIMENSION(int dim, bool id3d = true) : SECTION(SECTION::DIMENSION), DIM(dim, id3d) {}
 
-        DIMENSION(const DIMENSION &rhs) : SECTION(SECTION::DIMENSION), DIM(rhs.dimension(), rhs.is3D()) {}
+        DIMENSION(const DIMENSION& rhs) : SECTION(SECTION::DIMENSION), DIM(rhs.dimension(), rhs.is3D()) {}
 
         ~DIMENSION() = default;
 
@@ -238,7 +238,7 @@ namespace XF
             return dimension();
         }
 
-        void repr(std::ostream &out)
+        void repr(std::ostream& out)
         {
             out << "(" << std::dec << identity() << " " << ND() << ")" << std::endl;
         }
@@ -255,7 +255,7 @@ namespace XF
 
         RANGE(int id, size_t zone, size_t first, size_t last);
 
-        RANGE(const RANGE &rhs);
+        RANGE(const RANGE& rhs);
 
         virtual ~RANGE() = default;
 
@@ -291,7 +291,7 @@ namespace XF
 
         struct invalid_node_type_str : public wrong_string
         {
-            explicit invalid_node_type_str(const std::string &s) : wrong_string(s, "is not a valid NODE-TYPE string") {}
+            explicit invalid_node_type_str(const std::string& s) : wrong_string(s, "is not a valid NODE-TYPE string") {}
         };
 
         enum {
@@ -302,11 +302,11 @@ namespace XF
 
         static bool isValidTypeIdx(int x);
 
-        static bool isValidTypeStr(const std::string &x);
+        static bool isValidTypeStr(const std::string& x);
 
-        static const std::string &idx2str(int x);
+        static const std::string& idx2str(int x);
 
-        static int str2idx(const std::string &x);
+        static int str2idx(const std::string& x);
 
     private:
         int m_type;
@@ -325,7 +325,7 @@ namespace XF
                 throw std::invalid_argument("Invalid description of node type in constructor.");
         }
 
-        NODE(const NODE &rhs) :
+        NODE(const NODE& rhs) :
             RANGE(SECTION::NODE, rhs.zone(), rhs.first_index(), rhs.last_index()),
             DIM(rhs.ND(), rhs.is3D()),
             m_coordinate(rhs.m_coordinate.size()),
@@ -334,7 +334,7 @@ namespace XF
             if (!isValidTypeIdx(type()))
                 throw std::invalid_argument("Invalid description of node type in copy-constructor.");
 
-            for(int i = 0; i < m_coordinate.size(); ++i)
+            for (int i = 0; i < m_coordinate.size(); ++i)
             {
                 m_coordinate[i] = rhs.m_coordinate[i];
             }
@@ -342,12 +342,12 @@ namespace XF
 
         ~NODE() = default;
 
-        VEC &at(size_t loc_idx)
+        VEC& at(size_t loc_idx)
         {
             return m_coordinate.at(loc_idx);
         }
 
-        const VEC &at(size_t loc_idx) const
+        const VEC& at(size_t loc_idx) const
         {
             return m_coordinate.at(loc_idx);
         }
@@ -367,7 +367,7 @@ namespace XF
             return type() == ANY;
         }
 
-        int &type()
+        int& type()
         {
             return m_type;
         }
@@ -382,7 +382,7 @@ namespace XF
             return dimension();
         }
 
-        void repr(std::ostream &out);
+        void repr(std::ostream& out);
     };
 
     class CELL : public RANGE
@@ -395,7 +395,7 @@ namespace XF
 
         struct invalid_cell_type_str : public wrong_string
         {
-            explicit invalid_cell_type_str(const std::string &s) : wrong_string(s, "is not a valid CELL-TYPE string") {}
+            explicit invalid_cell_type_str(const std::string& s) : wrong_string(s, "is not a valid CELL-TYPE string") {}
         };
 
         struct invalid_elem_type_idx : public wrong_index
@@ -405,7 +405,7 @@ namespace XF
 
         struct invalid_elem_type_str : public wrong_string
         {
-            explicit invalid_elem_type_str(const std::string &s) : wrong_string(s, "is not a valid CELL-ELEM-TYPE string") {}
+            explicit invalid_elem_type_str(const std::string& s) : wrong_string(s, "is not a valid CELL-ELEM-TYPE string") {}
         };
 
         enum {
@@ -416,11 +416,11 @@ namespace XF
 
         static bool isValidTypeIdx(int x);
 
-        static bool isValidTypeStr(const std::string &x);
+        static bool isValidTypeStr(const std::string& x);
 
-        static const std::string &idx2str_type(int x);
+        static const std::string& idx2str_type(int x);
 
-        static int str2idx_type(const std::string &x);
+        static int str2idx_type(const std::string& x);
 
         enum {
             MIXED = 0,
@@ -435,11 +435,11 @@ namespace XF
 
         static bool isValidElemIdx(int x);
 
-        static bool isValidElemStr(const std::string &x);
+        static bool isValidElemStr(const std::string& x);
 
-        static const std::string &idx2str_elem(int x);
+        static const std::string& idx2str_elem(int x);
 
-        static int str2idx_elem(const std::string &x);
+        static int str2idx_elem(const std::string& x);
 
     private:
         int m_type;
@@ -464,7 +464,7 @@ namespace XF
                 m_desc.resize(num());
         }
 
-        CELL(const CELL &rhs) :
+        CELL(const CELL& rhs) :
             RANGE(SECTION::CELL, rhs.zone(), rhs.first_index(), rhs.last_index()),
             m_type(rhs.type()),
             m_elem(rhs.element_type()),
@@ -473,7 +473,7 @@ namespace XF
             if (num() != rhs.num())
                 throw std::runtime_error("Default copy operation is inconsistent.");
 
-            for(int i = 0; i < m_desc.size(); ++i)
+            for (int i = 0; i < m_desc.size(); ++i)
             {
                 m_desc[i] = rhs.m_desc[i];
             }
@@ -481,7 +481,7 @@ namespace XF
 
         ~CELL() = default;
 
-        int &at(size_t loc_idx)
+        int& at(size_t loc_idx)
         {
             if (m_elem == MIXED)
                 return m_desc.at(loc_idx);
@@ -503,7 +503,7 @@ namespace XF
             return m_type;
         }
 
-        int &type()
+        int& type()
         {
             return m_type;
         }
@@ -514,12 +514,12 @@ namespace XF
             return  m_elem;
         }
 
-        int &element_type()
+        int& element_type()
         {
             return  m_elem;
         }
 
-        void repr(std::ostream &out);
+        void repr(std::ostream& out);
     };
 
     struct CONNECTIVITY
@@ -533,7 +533,7 @@ namespace XF
 
         CONNECTIVITY() : c{ 0, 0 } {}
 
-        CONNECTIVITY(const CONNECTIVITY &rhs) : n(rhs.n)
+        CONNECTIVITY(const CONNECTIVITY& rhs) : n(rhs.n)
         {
             c[0] = rhs.c[0];
             c[1] = rhs.c[1];
@@ -551,7 +551,7 @@ namespace XF
             return c[1];
         }
 
-        void update_included_node(const std::vector<size_t> &src)
+        void update_included_node(const std::vector<size_t>& src)
         {
             const auto N = src.size();
             if (N < 2)
@@ -568,7 +568,7 @@ namespace XF
             c[1] = c1_idx;
         }
 
-        void nodal_adjacency(size_t loc_idx, size_t &loc_forward, size_t &loc_backward) const
+        void nodal_adjacency(size_t loc_idx, size_t& loc_forward, size_t& loc_backward) const
         {
             if (loc_idx == n.size() - 1)
                 loc_forward = n[0];
@@ -592,7 +592,7 @@ namespace XF
 
         struct invalid_face_type_str : public wrong_string
         {
-            explicit invalid_face_type_str(const std::string &s) : wrong_string(s, "is not a valid FACE-TYPE string") {}
+            explicit invalid_face_type_str(const std::string& s) : wrong_string(s, "is not a valid FACE-TYPE string") {}
         };
 
         enum {
@@ -605,11 +605,11 @@ namespace XF
 
         static bool isValidIdx(int x);
 
-        static bool isValidStr(const std::string &x);
+        static bool isValidStr(const std::string& x);
 
-        static const std::string &idx2str(int x);
+        static const std::string& idx2str(int x);
 
-        static int str2idx(const std::string &x);
+        static int str2idx(const std::string& x);
 
     private:
         int m_bc;
@@ -632,7 +632,7 @@ namespace XF
                 throw invalid_face_type_idx(face);
         }
 
-        FACE(const FACE &rhs) :
+        FACE(const FACE& rhs) :
             RANGE(SECTION::FACE, rhs.zone(), rhs.first_index(), rhs.last_index()),
             m_desc(rhs.m_desc.size()),
             m_bc(rhs.bc_type()),
@@ -644,7 +644,7 @@ namespace XF
             if (!isValidIdx(face_type()))
                 throw std::runtime_error("Invalid FACE-TYPE not detected in previous construction.");
 
-            for(int i = 0; i < m_desc.size(); ++i)
+            for (int i = 0; i < m_desc.size(); ++i)
             {
                 m_desc[i] = rhs.m_desc[i];
             }
@@ -652,12 +652,12 @@ namespace XF
 
         ~FACE() = default;
 
-        CONNECTIVITY &at(size_t loc_idx)
+        CONNECTIVITY& at(size_t loc_idx)
         {
             return m_desc.at(loc_idx);
         }
 
-        const CONNECTIVITY &at(size_t loc_idx) const
+        const CONNECTIVITY& at(size_t loc_idx) const
         {
             return m_desc.at(loc_idx);
         }
@@ -668,7 +668,7 @@ namespace XF
             return m_bc;
         }
 
-        int &bc_type()
+        int& bc_type()
         {
             return m_bc;
         }
@@ -679,12 +679,12 @@ namespace XF
             return m_face;
         }
 
-        int &face_type()
+        int& face_type()
         {
             return m_face;
         }
 
-        void repr(std::ostream &out);
+        void repr(std::ostream& out);
     };
 
     class ZONE :public SECTION
@@ -697,7 +697,7 @@ namespace XF
 
         struct invalid_zone_type_str : public wrong_string
         {
-            explicit invalid_zone_type_str(const std::string &s) : wrong_string(s, "is not a valid specification of ZONE-TYPE") {}
+            explicit invalid_zone_type_str(const std::string& s) : wrong_string(s, "is not a valid specification of ZONE-TYPE") {}
         };
 
     public:
@@ -730,11 +730,11 @@ namespace XF
 
         static bool isValidIdx(int x);
 
-        static bool isValidStr(const std::string &x);
+        static bool isValidStr(const std::string& x);
 
-        static const std::string &idx2str(int x);
+        static const std::string& idx2str(int x);
 
-        static int str2idx(const std::string &x);
+        static int str2idx(const std::string& x);
 
     private:
         size_t m_zoneID;
@@ -744,9 +744,9 @@ namespace XF
     public:
         ZONE() = delete;
 
-        ZONE(int zone, const std::string &zt, const std::string &name, int id = 0);
+        ZONE(int zone, const std::string& zt, const std::string& name, int id = 0);
 
-        ZONE(const ZONE &rhs) = default;
+        ZONE(const ZONE& rhs) = default;
 
         ~ZONE() = default;
 
@@ -756,29 +756,29 @@ namespace XF
             return m_zoneID;
         }
 
-        size_t &zone()
+        size_t& zone()
         {
             return m_zoneID;
         }
 
         /// B.C. string literal.
-        const std::string &type() const
+        const std::string& type() const
         {
             return m_zoneType;
         }
 
-        std::string &type()
+        std::string& type()
         {
             return m_zoneType;
         }
 
         /// Name of this zone.
-        const std::string &name() const
+        const std::string& name() const
         {
             return m_zoneName;
         }
 
-        std::string &name()
+        std::string& name()
         {
             return m_zoneName;
         }
@@ -789,12 +789,12 @@ namespace XF
             return m_domainID;
         }
 
-        int &domain()
+        int& domain()
         {
             return m_domainID;
         }
 
-        void repr(std::ostream &out)
+        void repr(std::ostream& out)
         {
             out << std::dec << "(" << identity() << " (" << zone() << " " << type() << " " << name() << ")())" << std::endl;
         }
@@ -812,12 +812,12 @@ namespace XF
     public:
         MESH() = delete;
 
-        MESH(const std::string &inp, std::ostream &log_out) : DIM(3)
+        MESH(const std::string& inp, std::ostream& log_out) : DIM(3)
         {
             readFromFile(inp, log_out);
         }
 
-        MESH(const MESH &rhs) = delete;
+        MESH(const MESH& rhs) = delete;
 
         ~MESH()
         {
@@ -825,9 +825,9 @@ namespace XF
         }
 
         /// I/O
-        void readFromFile(const std::string &src, std::ostream &fout);
+        void readFromFile(const std::string& src, std::ostream& fout);
 
-        void writeToFile(const std::string &dst) const;
+        void writeToFile(const std::string& dst) const;
 
         /// Num of elements
         size_t nNode() const
@@ -855,13 +855,13 @@ namespace XF
             return m_content.size();
         }
 
-        SECTION *at(size_t loc_idx)
+        SECTION* at(size_t loc_idx)
         {
             return m_content.at(loc_idx);
         }
 
     private:
-        void add_entry(SECTION *e)
+        void add_entry(SECTION* e)
         {
             m_content.push_back(e);
         }

@@ -9,9 +9,11 @@ namespace REP
     {
         explicit internal_error(int err) : std::runtime_error("Internal error occurred with error code: " + std::to_string(err) + ".") {}
 
-        explicit internal_error(const std::string &msg) : std::runtime_error("Internal error occurred with error message: \"" + msg + "\".") {}
+        explicit internal_error(const std::string& msg) : std::runtime_error("Internal error occurred with error message: \"" + msg + "\".") {}
 
-        internal_error(int err, const std::string &msg) : std::runtime_error("Internal error occurred with error code: " + std::to_string(err) + " and error message: \"" + msg + "\".") {}
+        internal_error(int err, const std::string& msg) : std::runtime_error("Internal error occurred with error code: " + std::to_string(err) + " and error message: \"" + msg + "\".") {}
+
+        internal_error(size_t err, const std::string& msg) : std::runtime_error("Internal error occurred with error code: " + std::to_string(err) + " and error message: \"" + msg + "\".") {}
     };
 
     struct NODE
@@ -68,9 +70,9 @@ namespace REP
             n01(0.0, 0.0, 0.0),
             n10(0.0, 0.0, 0.0)
         {
-            if(shape == XF::FACE::TRIANGULAR)
+            if (shape == XF::FACE::TRIANGULAR)
                 includedNode.resize(3);
-            else if(shape == XF::FACE::QUADRILATERAL)
+            else if (shape == XF::FACE::QUADRILATERAL)
                 includedNode.resize(4);
             else
                 throw internal_error("Face shape not recognized");
@@ -122,28 +124,28 @@ namespace REP
             centroid(0.0, 0.0, 0.0),
             volume(0.0)
         {
-            if(shape == XF::CELL::TETRAHEDRAL)
+            if (shape == XF::CELL::TETRAHEDRAL)
             {
                 includedNode.resize(4);
                 includedFace.resize(4);
                 adjacentCell.resize(4);
                 n.resize(4);
             }
-            else if(shape == XF::CELL::HEXAHEDRAL)
+            else if (shape == XF::CELL::HEXAHEDRAL)
             {
                 includedNode.resize(8);
                 includedFace.resize(6);
                 adjacentCell.resize(6);
                 n.resize(6);
             }
-            else if(shape == XF::CELL::PYRAMID)
+            else if (shape == XF::CELL::PYRAMID)
             {
                 includedNode.resize(5);
                 includedFace.resize(5);
                 adjacentCell.resize(5);
                 n.resize(5);
             }
-            else if(shape == XF::CELL::WEDGE)
+            else if (shape == XF::CELL::WEDGE)
             {
                 includedNode.resize(6);
                 includedFace.resize(5);
@@ -154,7 +156,7 @@ namespace REP
                 throw internal_error("Cell shape not recognized");
         }
 
-        virtual void add_face(const FACE &f) = 0;
+        virtual void add_face(const FACE& f) = 0;
     };
 
     struct TET : public CELL
@@ -166,16 +168,16 @@ namespace REP
     public:
         TET() = delete;
 
-        explicit TET(size_t idx) : CELL(idx, XF::CELL::TETRAHEDRAL), stage(0), face_flag{false} {}
+        explicit TET(size_t idx) : CELL(idx, XF::CELL::TETRAHEDRAL), stage(0), face_flag{ false } {}
 
-        void add_face(const FACE &f) override;
+        void add_face(const FACE& f) override;
 
     private:
-        void stage0_handler(const FACE &f);
+        void stage0_handler(const FACE& f);
 
-        void stage1_handler(const FACE &f);
+        void stage1_handler(const FACE& f);
 
-        void stage23_handler(const FACE &f);
+        void stage23_handler(const FACE& f);
     };
 
     struct HEX : public CELL
@@ -187,14 +189,14 @@ namespace REP
     public:
         HEX() = delete;
 
-        explicit HEX(size_t idx) : CELL(idx, XF::CELL::HEXAHEDRAL), stage(0), face_flag{false} {}
+        explicit HEX(size_t idx) : CELL(idx, XF::CELL::HEXAHEDRAL), stage(0), face_flag{ false } {}
 
-        void add_face(const FACE &f) override;
+        void add_face(const FACE& f) override;
 
     private:
-        void stage0_handler(const FACE &f);
+        void stage0_handler(const FACE& f);
 
-        void stage15_handler(const FACE &f);
+        void stage15_handler(const FACE& f);
     };
 
     struct PYRAMID : public CELL
@@ -203,7 +205,7 @@ namespace REP
 
         explicit PYRAMID(size_t idx) : CELL(idx, XF::CELL::PYRAMID) {}
 
-        void add_face(const FACE &f) override;
+        void add_face(const FACE& f) override;
     };
 
     struct WEDGE : public CELL
@@ -212,7 +214,7 @@ namespace REP
 
         explicit WEDGE(size_t idx) : CELL(idx, XF::CELL::WEDGE) {}
 
-        void add_face(const FACE &f) override;
+        void add_face(const FACE& f) override;
     };
 
     struct ZONE
@@ -226,7 +228,7 @@ namespace REP
 
         ZONE() = delete;
 
-        explicit ZONE(const std::string &n) : name(n) {}
+        explicit ZONE(const std::string& n) : name(n) {}
     };
 
     class Translator
@@ -240,20 +242,20 @@ namespace REP
     public:
         Translator() = delete;
 
-        Translator(XF::MESH *mesh, std::ostream &operation_log);
+        Translator(XF::MESH* mesh, std::ostream& operation_log);
 
-        void write(std::ostream &f_out);
+        void write(std::ostream& f_out);
 
     private:
-        void extract_node_basic_info(XF::NODE *curObj);
+        void extract_node_basic_info(XF::NODE* curObj);
 
-        void extract_cell_basic_info(XF::CELL *curObj);
+        void extract_cell_basic_info(XF::CELL* curObj);
 
-        void extract_face_basic_info(XF::FACE *curObj);
+        void extract_face_basic_info(XF::FACE* curObj);
 
         void calculate_face_geom_var();
 
-        void count_nodal_connectivity_step1(XF::FACE *curObj);
+        void count_nodal_connectivity_step1(XF::FACE* curObj);
 
         void calculate_face_unit_normal();
 

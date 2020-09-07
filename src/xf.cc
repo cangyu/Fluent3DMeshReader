@@ -2,17 +2,17 @@
 
 /// Convert a boundary condition string literal to unified form within the scope of this code.
 /// Outcome will be composed of LOWER case letters and '-' only!
-static std::string formalize(const std::string &s)
+static std::string formalize(const std::string& s)
 {
     std::string ret(s);
     std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
-    for (auto &e : ret)
+    for (auto& e : ret)
         if (e == '_')
             e = '-';
     return ret;
 }
 
-static void eat(std::istream &in, char c)
+static void eat(std::istream& in, char c)
 {
     char tmp = 0;
     do {
@@ -20,7 +20,7 @@ static void eat(std::istream &in, char c)
     } while (tmp != c);
 }
 
-static void skip_white(std::istream &in)
+static void skip_white(std::istream& in)
 {
     char tmp = 0;
     do {
@@ -56,7 +56,7 @@ namespace XF
         return candidate_set.find(x) != candidate_set.end();
     }
 
-    bool BC::isValidStr(const std::string &x)
+    bool BC::isValidStr(const std::string& x)
     {
         static const std::set<std::string> candidate_set{
             "interior",
@@ -79,7 +79,7 @@ namespace XF
         return candidate_set.find(formalize(x)) != candidate_set.end();
     }
 
-    const std::string &BC::idx2str(int x)
+    const std::string& BC::idx2str(int x)
     {
         static const std::map<int, std::string> mapping_set{
             std::pair<int, std::string>(INTERIOR, "interior"),
@@ -106,7 +106,7 @@ namespace XF
             return it->second;
     }
 
-    int BC::str2idx(const std::string &x)
+    int BC::str2idx(const std::string& x)
     {
         static const std::map<std::string, int> mapping_set{
             std::pair<std::string, int>("interior", INTERIOR),
@@ -149,7 +149,7 @@ namespace XF
             throw std::invalid_argument("Invalid range in constructor.");
     }
 
-    RANGE::RANGE(const RANGE &rhs) :
+    RANGE::RANGE(const RANGE& rhs) :
         SECTION(rhs.identity()),
         m_zone(rhs.zone()),
         m_first(rhs.first_index()),
@@ -164,7 +164,7 @@ namespace XF
         return x == VIRTUAL || x == ANY || x == BOUNDARY;
     }
 
-    bool NODE::isValidTypeStr(const std::string &x)
+    bool NODE::isValidTypeStr(const std::string& x)
     {
         static const std::set<std::string> candidate_set{
             "virtual",
@@ -175,7 +175,7 @@ namespace XF
         return candidate_set.find(formalize(x)) != candidate_set.end();
     }
 
-    const std::string &NODE::idx2str(int x)
+    const std::string& NODE::idx2str(int x)
     {
         static const std::map<int, std::string> mapping_set{
             std::pair<int, std::string>(VIRTUAL, "virtual"),
@@ -190,7 +190,7 @@ namespace XF
             return it->second;
     }
 
-    int NODE::str2idx(const std::string &x)
+    int NODE::str2idx(const std::string& x)
     {
         static const std::map<std::string, int> mapping_set{
             std::pair<std::string, int>("virtual", VIRTUAL),
@@ -205,7 +205,7 @@ namespace XF
             return it->second;
     }
 
-    void NODE::repr(std::ostream &out)
+    void NODE::repr(std::ostream& out)
     {
         out << "(" << std::dec << identity();
         out << " (" << std::hex << zone() << " " << first_index() << " " << last_index() << " ";
@@ -215,7 +215,7 @@ namespace XF
         const size_t N = num();
         for (size_t i = 0; i < N; ++i)
         {
-            const auto &node = at(i);
+            const auto& node = at(i);
             for (int k = 0; k < m_dim; ++k)
                 out << " " << node.at(k);
             out << std::endl;
@@ -234,7 +234,7 @@ namespace XF
         return candidate_set.find(x) != candidate_set.end();
     }
 
-    bool CELL::isValidTypeStr(const std::string &x)
+    bool CELL::isValidTypeStr(const std::string& x)
     {
         static const std::set<std::string> candidate_set{
             "dead",
@@ -245,7 +245,7 @@ namespace XF
         return candidate_set.find(formalize(x)) != candidate_set.end();
     }
 
-    const std::string &CELL::idx2str_type(int x)
+    const std::string& CELL::idx2str_type(int x)
     {
         static const std::map<int, std::string> mapping_set{
             std::pair<int, std::string>(FLUID, "fluid"),
@@ -260,7 +260,7 @@ namespace XF
             return it->second;
     }
 
-    int CELL::str2idx_type(const std::string &x)
+    int CELL::str2idx_type(const std::string& x)
     {
         static const std::map<std::string, int> mapping_set{
             std::pair<std::string, int>("fluid", FLUID),
@@ -291,7 +291,7 @@ namespace XF
         return candidate_set.find(x) != candidate_set.end();
     }
 
-    bool CELL::isValidElemStr(const std::string &x)
+    bool CELL::isValidElemStr(const std::string& x)
     {
         static const std::set<std::string> candidate_set{
             "mixed",
@@ -308,7 +308,7 @@ namespace XF
         return candidate_set.find(formalize(x)) != candidate_set.end();
     }
 
-    const std::string &CELL::idx2str_elem(int x)
+    const std::string& CELL::idx2str_elem(int x)
     {
         static const std::map<int, std::string> mapping_set{
             std::pair<int, std::string>(MIXED, "mixed"),
@@ -328,7 +328,7 @@ namespace XF
             return it->second;
     }
 
-    int CELL::str2idx_elem(const std::string &x)
+    int CELL::str2idx_elem(const std::string& x)
     {
         static const std::map<std::string, int> mapping_set{
             std::pair<std::string, int>("mixed", MIXED),
@@ -353,7 +353,7 @@ namespace XF
             return it->second;
     }
 
-    void CELL::repr(std::ostream &out)
+    void CELL::repr(std::ostream& out)
     {
         static const size_t NumPerLine = 40;
 
@@ -391,7 +391,7 @@ namespace XF
         return candidate_set.find(x) != candidate_set.end();
     }
 
-    bool FACE::isValidStr(const std::string &x)
+    bool FACE::isValidStr(const std::string& x)
     {
         static const std::set<std::string> candidate_set{
             "mixed",
@@ -404,7 +404,7 @@ namespace XF
         return candidate_set.find(x) != candidate_set.end();
     }
 
-    const std::string &FACE::idx2str(int x)
+    const std::string& FACE::idx2str(int x)
     {
         static const std::map<int, std::string> mapping_set{
             std::pair<int, std::string>(MIXED, "mixed"),
@@ -421,7 +421,7 @@ namespace XF
             return it->second;
     }
 
-    int FACE::str2idx(const std::string &x)
+    int FACE::str2idx(const std::string& x)
     {
         static const std::map<std::string, int> mapping_set{
             std::pair<std::string, int>("mixed", MIXED),
@@ -441,7 +441,7 @@ namespace XF
             return it->second;
     }
 
-    void FACE::repr(std::ostream &out)
+    void FACE::repr(std::ostream& out)
     {
         out << "(" << std::dec << identity() << " (";
         out << std::hex;
@@ -453,7 +453,7 @@ namespace XF
         {
             for (size_t i = 0; i < N; ++i)
             {
-                const auto &loc_cnect = at(i);
+                const auto& loc_cnect = at(i);
                 out << " " << loc_cnect.n.size();
                 for (auto e : loc_cnect.n)
                     out << " " << e;
@@ -464,7 +464,7 @@ namespace XF
         {
             for (size_t i = 0; i < N; ++i)
             {
-                const auto &loc_cnect = at(i);
+                const auto& loc_cnect = at(i);
                 for (auto e : loc_cnect.n)
                     out << " " << e;
                 out << " " << loc_cnect.c[0] << " " << loc_cnect.c[1] << std::endl;
@@ -480,7 +480,7 @@ namespace XF
         return ret;
     }
 
-    bool ZONE::isValidStr(const std::string &x)
+    bool ZONE::isValidStr(const std::string& x)
     {
         static const std::set<std::string> candidate_set{
             "degassing",
@@ -512,7 +512,7 @@ namespace XF
         return candidate_set.find(formalize(x)) != candidate_set.end();
     }
 
-    const std::string &ZONE::idx2str(int x)
+    const std::string& ZONE::idx2str(int x)
     {
         static const std::map<int, std::string> mapping_set{
             std::pair<int, std::string>(DEGASSING, "degassing"),
@@ -548,7 +548,7 @@ namespace XF
             return it->second;
     }
 
-    int ZONE::str2idx(const std::string &x)
+    int ZONE::str2idx(const std::string& x)
     {
         static const std::map<std::string, int> mapping_set{
             std::pair<std::string, int>("degassing", DEGASSING),
@@ -584,7 +584,7 @@ namespace XF
             return it->second;
     }
 
-    ZONE::ZONE(int zone, const std::string &zt, const std::string &name, int id) :
+    ZONE::ZONE(int zone, const std::string& zt, const std::string& name, int id) :
         SECTION(SECTION::ZONE),
         m_zoneID(zone),
         m_zoneType(formalize(zt)),
@@ -595,7 +595,7 @@ namespace XF
             throw invalid_zone_type_str(zt);
     }
 
-    void MESH::readFromFile(const std::string &src, std::ostream &fout)
+    void MESH::readFromFile(const std::string& src, std::ostream& fout)
     {
         // Open grid file
         std::ifstream fin(src);
@@ -692,7 +692,7 @@ namespace XF
                     {
                         for (int i = first; i <= last; ++i)
                         {
-                            auto &ce = e->at(i - first);
+                            auto& ce = e->at(i - first);
                             fin >> ce.x() >> ce.y() >> ce.z();
                         }
                     }
@@ -700,7 +700,7 @@ namespace XF
                     {
                         for (int i = first; i <= last; ++i)
                         {
-                            auto &ce = e->at(i - first);
+                            auto& ce = e->at(i - first);
                             fin >> ce.x() >> ce.y();
                         }
                     }
@@ -879,7 +879,7 @@ namespace XF
         fout << "Done!" << std::endl;
     }
 
-    void MESH::writeToFile(const std::string &dst) const
+    void MESH::writeToFile(const std::string& dst) const
     {
         if (nCell() == 0)
             throw std::runtime_error("Invalid num of cells.");

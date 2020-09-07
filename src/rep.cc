@@ -1,10 +1,10 @@
 #include "rep.h"
 
 template<typename T>
-static bool contains(const std::vector<T> &src, const T &elem, size_t &idx)
+static bool contains(const std::vector<T>& src, const T& elem, size_t& idx)
 {
     const auto N = src.size();
-    for(size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
     {
         if (src[i] == elem)
         {
@@ -17,24 +17,24 @@ static bool contains(const std::vector<T> &src, const T &elem, size_t &idx)
 
 static inline size_t forward_index(size_t i, size_t mod)
 {
-    if(i == mod-1)
+    if (i == mod - 1)
         return 0;
     else
-        return i+1;
+        return i + 1;
 }
 
 static inline size_t backward_index(size_t i, size_t mod)
 {
-    if(i==0)
-        return mod-1;
+    if (i == 0)
+        return mod - 1;
     else
-        return i-1;
+        return i - 1;
 }
 
-void REP::TET::stage0_handler(const FACE &f)
+void REP::TET::stage0_handler(const FACE& f)
 {
     includedFace[0] = f.index;
-    if(index == f.c0)
+    if (index == f.c0)
     {
         includedNode[3] = f.includedNode[0];
         includedNode[2] = f.includedNode[1];
@@ -50,18 +50,18 @@ void REP::TET::stage0_handler(const FACE &f)
     }
 
     face_flag[0] = true;
-    face_flag[1] = face_flag[2] =face_flag[3] = false;
+    face_flag[1] = face_flag[2] = face_flag[3] = false;
 }
 
-void REP::TET::stage1_handler(const FACE &f)
+void REP::TET::stage1_handler(const FACE& f)
 {
     /// Find vertex 0
     bool ok = false;
     size_t next, prev;
-    for(size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < 3; ++i)
     {
         const size_t target = f.includedNode[i];
-        if(target != includedNode[1] && target != includedNode[2] && target != includedNode[3])
+        if (target != includedNode[1] && target != includedNode[2] && target != includedNode[3])
         {
             includedNode[0] = target;
             ok = true;
@@ -70,35 +70,35 @@ void REP::TET::stage1_handler(const FACE &f)
             break;
         }
     }
-    if(!ok)
+    if (!ok)
         throw internal_error("Vertex0 not found in stage 1");
 
     /// Find corresponding face
     size_t loc;
-    if(index == f.c0)
+    if (index == f.c0)
     {
-        if(next == includedNode[1] && prev == includedNode[2])
+        if (next == includedNode[1] && prev == includedNode[2])
             loc = 3;
-        else if(next == includedNode[3] && prev == includedNode[1])
+        else if (next == includedNode[3] && prev == includedNode[1])
             loc = 2;
-        else if(next == includedNode[2] && prev == includedNode[3])
+        else if (next == includedNode[2] && prev == includedNode[3])
             loc = 1;
         else
             throw internal_error("Face not found in stage 1 part 0");
     }
     else
     {
-        if(next == includedNode[2] && prev == includedNode[1])
+        if (next == includedNode[2] && prev == includedNode[1])
             loc = 3;
-        else if(next == includedNode[1] && prev == includedNode[3])
+        else if (next == includedNode[1] && prev == includedNode[3])
             loc = 2;
-        else if(next == includedNode[3] && prev == includedNode[2])
+        else if (next == includedNode[3] && prev == includedNode[2])
             loc = 1;
         else
             throw internal_error("Face not found in stage 1 part 1");
     }
 
-    if(face_flag[loc])
+    if (face_flag[loc])
         throw internal_error("Duplication detected");
     else
     {
@@ -108,14 +108,14 @@ void REP::TET::stage1_handler(const FACE &f)
     }
 }
 
-void REP::TET::stage23_handler(const FACE &f)
+void REP::TET::stage23_handler(const FACE& f)
 {
     const std::string STAGE_STR = std::to_string(stage);
 
     /// Find vertex 0
     size_t i;
     size_t next, prev;
-    if(contains(f.includedNode, includedNode[0], i))
+    if (contains(f.includedNode, includedNode[0], i))
     {
         next = f.includedNode[forward_index(i, 3)];
         prev = f.includedNode[backward_index(i, 3)];
@@ -125,30 +125,30 @@ void REP::TET::stage23_handler(const FACE &f)
 
     /// Find corresponding face
     size_t loc;
-    if(index == f.c0)
+    if (index == f.c0)
     {
-        if(next == includedNode[1] && prev == includedNode[2])
+        if (next == includedNode[1] && prev == includedNode[2])
             loc = 3;
-        else if(next == includedNode[3] && prev == includedNode[1])
+        else if (next == includedNode[3] && prev == includedNode[1])
             loc = 2;
-        else if(next == includedNode[2] && prev == includedNode[3])
+        else if (next == includedNode[2] && prev == includedNode[3])
             loc = 1;
         else
             throw internal_error("Face not found in stage " + STAGE_STR + " part 0");
     }
     else
     {
-        if(next == includedNode[2] && prev == includedNode[1])
+        if (next == includedNode[2] && prev == includedNode[1])
             loc = 3;
-        else if(next == includedNode[1] && prev == includedNode[3])
+        else if (next == includedNode[1] && prev == includedNode[3])
             loc = 2;
-        else if(next == includedNode[3] && prev == includedNode[2])
+        else if (next == includedNode[3] && prev == includedNode[2])
             loc = 1;
         else
             throw internal_error("Face not found in stage " + STAGE_STR + " part 1");
     }
 
-    if(face_flag[loc])
+    if (face_flag[loc])
         throw internal_error("Duplication detected in stage " + STAGE_STR);
     else
     {
@@ -158,20 +158,20 @@ void REP::TET::stage23_handler(const FACE &f)
     }
 }
 
-void REP::TET::add_face(const FACE &f)
+void REP::TET::add_face(const FACE& f)
 {
-    if(f.shape != XF::FACE::TRIANGULAR)
+    if (f.shape != XF::FACE::TRIANGULAR)
         throw internal_error(index, "Invalid shape");
 
-    if(index != f.c0 && index != f.c1)
+    if (index != f.c0 && index != f.c1)
         throw internal_error(index, "Invalid connectivity detected");
 
-    if(stage < 0 || stage >= 4)
+    if (stage < 0 || stage >= 4)
         throw internal_error(index, "Unexpected stage");
 
-    if(stage == 0)
+    if (stage == 0)
         stage0_handler(f);
-    else if(stage == 1)
+    else if (stage == 1)
         stage1_handler(f);
     else
         stage23_handler(f);
@@ -179,10 +179,10 @@ void REP::TET::add_face(const FACE &f)
     ++stage;
 }
 
-void REP::HEX::stage0_handler(const FACE &f)
+void REP::HEX::stage0_handler(const FACE& f)
 {
     includedFace[0] = f.index;
-    if(index == f.c0)
+    if (index == f.c0)
     {
         includedNode[0] = f.includedNode[0];
         includedNode[3] = f.includedNode[1];
@@ -200,7 +200,7 @@ void REP::HEX::stage0_handler(const FACE &f)
     }
 
     face_flag[0] = true;
-    for(int i = 1; i < 6; ++i)
+    for (int i = 1; i < 6; ++i)
         face_flag[i] = false;
 
     includedNode[1] = 0;
@@ -209,25 +209,25 @@ void REP::HEX::stage0_handler(const FACE &f)
     includedNode[5] = 0;
 }
 
-void REP::HEX::stage15_handler(const FACE &f)
+void REP::HEX::stage15_handler(const FACE& f)
 {
     int cnt = 0;
-    for(auto e : f.includedNode)
+    for (auto e : f.includedNode)
     {
-        if(e == includedNode[0] || e == includedNode[3] || e == includedNode[7] || e == includedNode[4])
+        if (e == includedNode[0] || e == includedNode[3] || e == includedNode[7] || e == includedNode[4])
             ++cnt;
     }
 
     size_t loc, pivot, pivot_adj;
-    if(cnt == 2)
+    if (cnt == 2)
     {
-        if(contains(f.includedNode, includedNode[0], pivot))
+        if (contains(f.includedNode, includedNode[0], pivot))
         {
-            if(contains(f.includedNode, includedNode[4], pivot_adj))
+            if (contains(f.includedNode, includedNode[4], pivot_adj))
             {
                 loc = 2;
                 size_t v5, v1;
-                if(index == f.c0)
+                if (index == f.c0)
                 {
                     v5 = f.includedNode[forward_index(pivot_adj, 4)];
                     v1 = f.includedNode[backward_index(pivot, 4)];
@@ -238,27 +238,27 @@ void REP::HEX::stage15_handler(const FACE &f)
                     v1 = f.includedNode[forward_index(pivot, 4)];
                 }
 
-                if(includedNode[5] == 0)
+                if (includedNode[5] == 0)
                     includedNode[5] = v5;
                 else
                 {
-                    if(includedNode[5] != v5)
+                    if (includedNode[5] != v5)
                         throw internal_error("Inconsistent at vertex5");
                 }
 
-                if(includedNode[1] == 0)
+                if (includedNode[1] == 0)
                     includedNode[1] = v1;
                 else
                 {
-                    if(includedNode[1] != v1)
+                    if (includedNode[1] != v1)
                         throw internal_error("Inconsistent at vertex1");
                 }
             }
-            else if(contains(f.includedNode, includedNode[3], pivot_adj))
+            else if (contains(f.includedNode, includedNode[3], pivot_adj))
             {
                 loc = 4;
                 size_t v1, v2;
-                if(index == f.c0)
+                if (index == f.c0)
                 {
                     v1 = f.includedNode[forward_index(pivot, 4)];
                     v2 = f.includedNode[backward_index(pivot_adj, 4)];
@@ -269,32 +269,32 @@ void REP::HEX::stage15_handler(const FACE &f)
                     v2 = f.includedNode[forward_index(pivot_adj, 4)];
                 }
 
-                if(includedNode[1] == 0)
+                if (includedNode[1] == 0)
                     includedNode[1] = v1;
                 else
                 {
-                    if(includedNode[1] != v1)
+                    if (includedNode[1] != v1)
                         throw internal_error("Inconsistent at vertex1");
                 }
 
-                if(includedNode[2] == 0)
+                if (includedNode[2] == 0)
                     includedNode[2] = v2;
                 else
                 {
-                    if(includedNode[2] != v2)
+                    if (includedNode[2] != v2)
                         throw internal_error("Inconsistent at vertex2");
                 }
             }
             else
                 throw internal_error("Vertex0 pair not found");
         }
-        else if(contains(f.includedNode, includedNode[7], pivot))
+        else if (contains(f.includedNode, includedNode[7], pivot))
         {
-            if(contains(f.includedNode, includedNode[4], pivot_adj))
+            if (contains(f.includedNode, includedNode[4], pivot_adj))
             {
                 loc = 5;
                 size_t v6, v5;
-                if(index == f.c0)
+                if (index == f.c0)
                 {
                     v6 = f.includedNode[forward_index(pivot, 4)];
                     v5 = f.includedNode[backward_index(pivot_adj, 4)];
@@ -305,27 +305,27 @@ void REP::HEX::stage15_handler(const FACE &f)
                     v5 = f.includedNode[forward_index(pivot_adj, 4)];
                 }
 
-                if(includedNode[6] == 0)
+                if (includedNode[6] == 0)
                     includedNode[6] = v6;
                 else
                 {
-                    if(includedNode[6] != v6)
+                    if (includedNode[6] != v6)
                         throw internal_error("Inconsistent at vertex6");
                 }
 
-                if(includedNode[5] == 0)
+                if (includedNode[5] == 0)
                     includedNode[5] = v5;
                 else
                 {
-                    if(includedNode[5] != v5)
+                    if (includedNode[5] != v5)
                         throw internal_error("Inconsistent at vertex5");
                 }
             }
-            else if(contains(f.includedNode, includedNode[3], pivot_adj))
+            else if (contains(f.includedNode, includedNode[3], pivot_adj))
             {
                 loc = 3;
                 size_t v2, v6;
-                if(index == f.c0)
+                if (index == f.c0)
                 {
                     v2 = f.includedNode[forward_index(pivot_adj, 4)];
                     v6 = f.includedNode[backward_index(pivot, 4)];
@@ -336,19 +336,19 @@ void REP::HEX::stage15_handler(const FACE &f)
                     v6 = f.includedNode[forward_index(pivot, 4)];
                 }
 
-                if(includedNode[2] == 0)
+                if (includedNode[2] == 0)
                     includedNode[2] = v2;
                 else
                 {
-                    if(includedNode[2] != v2)
+                    if (includedNode[2] != v2)
                         throw internal_error("Inconsistent at vertex2");
                 }
 
-                if(includedNode[6] == 0)
+                if (includedNode[6] == 0)
                     includedNode[6] = v6;
                 else
                 {
-                    if(includedNode[6] != v6)
+                    if (includedNode[6] != v6)
                         throw internal_error("Inconsistent at vertex6");
                 }
             }
@@ -358,12 +358,12 @@ void REP::HEX::stage15_handler(const FACE &f)
         else
             throw internal_error(index, "Inconsistent connectivity");
     }
-    else if(cnt == 0)
+    else if (cnt == 0)
         loc = 1;
     else
         throw internal_error(index, "Face does not match");
 
-    if(face_flag[loc])
+    if (face_flag[loc])
         throw internal_error("Duplication detected");
     else
     {
@@ -373,18 +373,18 @@ void REP::HEX::stage15_handler(const FACE &f)
     }
 }
 
-void REP::HEX::add_face(const FACE &f)
+void REP::HEX::add_face(const FACE& f)
 {
-    if(f.shape != XF::FACE::QUADRILATERAL)
+    if (f.shape != XF::FACE::QUADRILATERAL)
         throw internal_error(index, "Invalid shape");
 
-    if(index != f.c0 && index != f.c1)
+    if (index != f.c0 && index != f.c1)
         throw internal_error(index, "Invalid connectivity detected");
 
-    if(stage < 0 || stage >= 6)
+    if (stage < 0 || stage >= 6)
         throw internal_error(index, "Unexpected stage");
 
-    if(stage == 0)
+    if (stage == 0)
         stage0_handler(f);
     else
         stage15_handler(f);
@@ -392,23 +392,23 @@ void REP::HEX::add_face(const FACE &f)
     ++stage;
 }
 
-void REP::PYRAMID::add_face(const FACE &f)
+void REP::PYRAMID::add_face(const FACE& f)
 {
-    if(index != f.c0 && index != f.c1)
+    if (index != f.c0 && index != f.c1)
         throw internal_error(index, "Invalid connectivity detected");
 
     /// TODO
 }
 
-void REP::WEDGE::add_face(const FACE &f)
+void REP::WEDGE::add_face(const FACE& f)
 {
-    if(index != f.c0 && index != f.c1)
+    if (index != f.c0 && index != f.c1)
         throw internal_error(index, "Invalid connectivity detected");
 
     /// TODO
 }
 
-void REP::Translator::extract_node_basic_info(XF::NODE *curObj)
+void REP::Translator::extract_node_basic_info(XF::NODE* curObj)
 {
     /// Node type within this zone
     const bool tp = curObj->is_boundary_node();
@@ -418,13 +418,13 @@ void REP::Translator::extract_node_basic_info(XF::NODE *curObj)
     const size_t cur_last = curObj->last_index();
     for (size_t i = cur_first; i <= cur_last; ++i)
     {
-        const auto &c = curObj->at(i - cur_first);
-        m_node.at(i-1) = new NODE(tp, c.x(), c.y(), c.z());
-        m_node.at(i-1)->index = i;
+        const auto& c = curObj->at(i - cur_first);
+        m_node.at(i - 1) = new NODE(tp, c.x(), c.y(), c.z());
+        m_node.at(i - 1)->index = i;
     }
 }
 
-void REP::Translator::extract_cell_basic_info(XF::CELL *curObj)
+void REP::Translator::extract_cell_basic_info(XF::CELL* curObj)
 {
     /// 1-based global face index
     const size_t cur_first = curObj->first_index();
@@ -436,16 +436,16 @@ void REP::Translator::extract_cell_basic_info(XF::CELL *curObj)
         switch (elem)
         {
         case XF::CELL::TETRAHEDRAL:
-            m_cell.at(i-1) = new TET(i);
+            m_cell.at(i - 1) = new TET(i);
             break;
         case XF::CELL::HEXAHEDRAL:
-            m_cell.at(i-1) = new HEX(i);
+            m_cell.at(i - 1) = new HEX(i);
             break;
         case XF::CELL::PYRAMID:
-            m_cell.at(i-1) = new PYRAMID(i);
+            m_cell.at(i - 1) = new PYRAMID(i);
             break;
         case XF::CELL::WEDGE:
-            m_cell.at(i-1) = new WEDGE(i);
+            m_cell.at(i - 1) = new WEDGE(i);
             break;
         default:
             throw internal_error("Unexpected cell shape");
@@ -453,14 +453,14 @@ void REP::Translator::extract_cell_basic_info(XF::CELL *curObj)
     }
 }
 
-void REP::Translator::extract_face_basic_info(XF::FACE *curObj)
+void REP::Translator::extract_face_basic_info(XF::FACE* curObj)
 {
     /// 1-based global face index
     const size_t cur_first = curObj->first_index();
     const size_t cur_last = curObj->last_index();
     for (size_t i = cur_first; i <= cur_last; ++i)
     {
-        const auto &c = curObj->at(i - cur_first);
+        const auto& c = curObj->at(i - cur_first);
 
         const auto nn = c.n.size();
         switch (nn)
@@ -468,21 +468,21 @@ void REP::Translator::extract_face_basic_info(XF::FACE *curObj)
         case 2:
             throw internal_error("This is a 3D program");
         case 3:
-            m_face.at(i-1) = new TRIANGLE(i);
+            m_face.at(i - 1) = new TRIANGLE(i);
             break;
         case 4:
-            m_face.at(i-1) = new QUAD(i);
+            m_face.at(i - 1) = new QUAD(i);
             break;
         default:
             throw internal_error("Unexpected face shape");
         }
 
-        auto dst = m_face.at(i-1);
+        auto dst = m_face.at(i - 1);
 
         /// Nodes within this face.
         /// 1-based node index are stored.
         /// Right-hand convention is preserved.
-        for(int j = 0; j < nn; ++j)
+        for (int j = 0; j < nn; ++j)
             dst->includedNode[j] = c.n[j];
 
         /// Adjacent cells.
@@ -490,16 +490,16 @@ void REP::Translator::extract_face_basic_info(XF::FACE *curObj)
         /// Right-hand convention is preserved.
         dst->c0 = c.c0();
         dst->c1 = c.c1();
-        if(dst->c0 == 0 && dst->c1 == 0)
+        if (dst->c0 == 0 && dst->c1 == 0)
             throw internal_error("Surface mesh is not expected currently");
 
         /// Boundary flag.
         dst->at_boundary = (dst->c0 == 0 || dst->c1 == 0);
 
         /// Cell construction.
-        if(dst->c0 != 0)
+        if (dst->c0 != 0)
             m_cell.at(dst->c0 - 1)->add_face(*dst);
-        if(dst->c1 != 0)
+        if (dst->c1 != 0)
             m_cell.at(dst->c1 - 1)->add_face(*dst);
     }
 }
@@ -511,11 +511,11 @@ void REP::Translator::calculate_face_geom_var()
     {
         auto f = m_face[i];
 
-        if(f->shape == XF::FACE::TRIANGULAR)
+        if (f->shape == XF::FACE::TRIANGULAR)
         {
-            const auto &p1 = m_node.at(f->includedNode[0] - 1)->coordinate;
-            const auto &p2 = m_node.at(f->includedNode[1] - 1)->coordinate;
-            const auto &p3 = m_node.at(f->includedNode[2] - 1)->coordinate;
+            const auto& p1 = m_node.at(f->includedNode[0] - 1)->coordinate;
+            const auto& p2 = m_node.at(f->includedNode[1] - 1)->coordinate;
+            const auto& p3 = m_node.at(f->includedNode[2] - 1)->coordinate;
 
             f->area = triangle_area(p1, p2, p3);
             triangle_center(p1, p2, p3, f->centroid);
@@ -523,30 +523,30 @@ void REP::Translator::calculate_face_geom_var()
         }
         else if (f->shape == XF::FACE::QUADRILATERAL)
         {
-            const auto &p1 = m_node.at(f->includedNode[0] - 1)->coordinate;
-            const auto &p2 = m_node.at(f->includedNode[1] - 1)->coordinate;
-            const auto &p3 = m_node.at(f->includedNode[2] - 1)->coordinate;
-            const auto &p4 = m_node.at(f->includedNode[3] - 1)->coordinate;
+            const auto& p1 = m_node.at(f->includedNode[0] - 1)->coordinate;
+            const auto& p2 = m_node.at(f->includedNode[1] - 1)->coordinate;
+            const auto& p3 = m_node.at(f->includedNode[2] - 1)->coordinate;
+            const auto& p4 = m_node.at(f->includedNode[3] - 1)->coordinate;
 
             f->area = quadrilateral_area(p1, p2, p3, p4);
             quadrilateral_center(p1, p2, p3, p4, f->centroid);
             quadrilateral_normal(p1, p2, p3, p4, f->n01);
         }
-        else if(f->shape == XF::FACE::LINEAR)
+        else if (f->shape == XF::FACE::LINEAR)
             throw internal_error("This is a 3D program");
         else
             throw internal_error("Shape not recognized");
     }
 }
 
-void REP::Translator::count_nodal_connectivity_step1(XF::FACE *curObj)
+void REP::Translator::count_nodal_connectivity_step1(XF::FACE* curObj)
 {
     /// 1-based index
     const size_t cur_first = curObj->first_index();
     const size_t cur_last = curObj->last_index();
     for (size_t i = cur_first; i <= cur_last; ++i)
     {
-        const auto &c = curObj->at(i - cur_first);
+        const auto& c = curObj->at(i - cur_first);
 
         const size_t loc_c0 = c.c0();
         const size_t loc_c1 = c.c1();
@@ -587,7 +587,7 @@ void REP::Translator::calculate_face_unit_normal()
             auto curNode = m_node.at(j - 1);
             approximate_centroid += curNode->coordinate;
         }
-        approximate_centroid /= curCell->includedNode.size();
+        approximate_centroid /= static_cast<double>(curCell->includedNode.size());
 
         const auto NCF = curCell->includedFace.size();
         for (size_t j = 0; j < NCF; ++j)
@@ -598,7 +598,7 @@ void REP::Translator::calculate_face_unit_normal()
             VEC approximate_r = curFace->centroid;
             approximate_r -= approximate_centroid;
 
-            auto &curSN = curCell->n.at(j);
+            auto& curSN = curCell->n.at(j);
             curSN = curFace->n01;
             if (approximate_r.dot(curSN) < 0)
                 curSN *= -1.0;
@@ -615,7 +615,7 @@ void REP::Translator::calculate_face_unit_normal()
             const auto curFaceIdx = curCell->includedFace.at(j);
             auto curFace = m_face.at(curFaceIdx - 1);
 
-            const auto &curSN = curCell->n.at(j);
+            const auto& curSN = curCell->n.at(j);
 
             if (curFace->c0 == i)
                 curFace->n01 = curSN;
@@ -648,8 +648,8 @@ void REP::Translator::calculate_cell_geom_var()
 
             /// Based on the divergence theorem.
             /// See (5.15) and (5.17) of Jiri Blazek's CFD book.
-            const auto &cf_c = curFace->centroid;
-            const auto &cf_n = curCell->n.at(j);
+            const auto& cf_c = curFace->centroid;
+            const auto& cf_n = curCell->n.at(j);
             const auto w = cf_c.dot(cf_n) * curFace->area;
             curCell->volume += w;
 
@@ -662,7 +662,7 @@ void REP::Translator::calculate_cell_geom_var()
     }
 }
 
-REP::Translator::Translator(XF::MESH *mesh, std::ostream &operation_log)
+REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
 {
     operation_log << "======================================================================" << std::endl;
     operation_log << "                          Fluent3DMeshReader                          " << std::endl;
@@ -764,24 +764,24 @@ REP::Translator::Translator(XF::MESH *mesh, std::ostream &operation_log)
     operation_log << "Parsing ZONE sections ..." << std::endl;
     std::vector<size_t> zone_idx;
     m_zone.clear();
-    for(size_t i0 = 0; i0 < num_of_section; ++i0)
+    for (size_t i0 = 0; i0 < num_of_section; ++i0)
     {
         auto curObj = dynamic_cast<XF::ZONE*>(mesh->at(i0));
-        if(curObj == nullptr)
+        if (curObj == nullptr)
             continue;
 
-        if(XF::ZONE::str2idx(curObj->type()) == XF::ZONE::INTERIOR)
+        if (XF::ZONE::str2idx(curObj->type()) == XF::ZONE::INTERIOR)
             continue;
 
         const auto curZoneIdx = curObj->zone();
 
-        for(size_t j0 = 0; j0 < num_of_section; ++j0)
+        for (size_t j0 = 0; j0 < num_of_section; ++j0)
         {
             auto curObj_aux = dynamic_cast<XF::FACE*>(mesh->at(j0));
-            if(curObj_aux == nullptr)
+            if (curObj_aux == nullptr)
                 continue;
 
-            if(curObj_aux->zone() == curZoneIdx)
+            if (curObj_aux->zone() == curZoneIdx)
             {
                 m_zone.emplace_back(curObj->name());
                 zone_idx.push_back(curZoneIdx);
@@ -789,28 +789,28 @@ REP::Translator::Translator(XF::MESH *mesh, std::ostream &operation_log)
             }
         }
     }
-    for(size_t i = 0; i < zone_idx.size(); ++i)
+    for (size_t i = 0; i < zone_idx.size(); ++i)
     {
         const auto curZoneIdx = zone_idx[i];
-        auto &cz = m_zone.at(i);
+        auto& cz = m_zone.at(i);
 
-        for(size_t j = 0; j < num_of_section; ++j)
+        for (size_t j = 0; j < num_of_section; ++j)
         {
             auto curObj = dynamic_cast<XF::FACE*>(mesh->at(j));
-            if(curObj == nullptr)
+            if (curObj == nullptr)
                 continue;
 
-            if(curObj->zone() == curZoneIdx)
+            if (curObj->zone() == curZoneIdx)
             {
                 cz.includedFace.resize(curObj->num());
-                for(size_t k = 0; k < cz.includedFace.size(); ++k)
+                for (size_t k = 0; k < cz.includedFace.size(); ++k)
                     cz.includedFace[k] = curObj->first_index() + k;
 
                 std::set<size_t> nl;
-                for(size_t k = 0; k < cz.includedFace.size(); ++k)
+                for (size_t k = 0; k < cz.includedFace.size(); ++k)
                 {
-                    const auto &connection = curObj->at(k);
-                    for(const auto &e : connection.n)
+                    const auto& connection = curObj->at(k);
+                    for (const auto& e : connection.n)
                         nl.insert(e);
                 }
                 cz.includedNode.assign(nl.begin(), nl.end());
@@ -821,7 +821,7 @@ REP::Translator::Translator(XF::MESH *mesh, std::ostream &operation_log)
     operation_log << "Finished!" << std::endl;
 }
 
-void REP::Translator::write(std::ostream &f_out)
+void REP::Translator::write(std::ostream& f_out)
 {
     static const char SEP = ' ';
 
@@ -832,7 +832,7 @@ void REP::Translator::write(std::ostream &f_out)
 
     f_out << N_NODE << SEP << N_FACE << SEP << N_CELL << SEP << N_ZONE << std::endl;
 
-    for(size_t i = 0; i < N_NODE; ++i)
+    for (size_t i = 0; i < N_NODE; ++i)
     {
         auto cn = m_node.at(i);
 
@@ -843,21 +843,21 @@ void REP::Translator::write(std::ostream &f_out)
         f_out << cn->coordinate.z() << SEP;
 
         f_out << cn->adjacentNode.size() << SEP;
-        for(const auto &e : cn->adjacentNode)
+        for (const auto& e : cn->adjacentNode)
             f_out << e << SEP;
 
         f_out << cn->dependentFace.size() << SEP;
-        for(const auto &e : cn->dependentFace)
+        for (const auto& e : cn->dependentFace)
             f_out << e << SEP;
 
         f_out << cn->dependentCell.size() << SEP;
-        for(const auto &e : cn->dependentCell)
+        for (const auto& e : cn->dependentCell)
             f_out << e << SEP;
 
         f_out << std::endl;
     }
 
-    for(size_t i = 0; i < N_FACE; ++i)
+    for (size_t i = 0; i < N_FACE; ++i)
     {
         auto cf = m_face.at(i);
 
@@ -871,7 +871,7 @@ void REP::Translator::write(std::ostream &f_out)
 
         f_out << cf->area << SEP;
 
-        for(const auto &e : cf->includedNode)
+        for (const auto& e : cf->includedNode)
             f_out << e << SEP;
 
         f_out << cf->c0 << SEP;
@@ -888,7 +888,7 @@ void REP::Translator::write(std::ostream &f_out)
         f_out << std::endl;
     }
 
-    for(size_t i = 0; i < N_CELL; ++i)
+    for (size_t i = 0; i < N_CELL; ++i)
     {
         auto cc = m_cell.at(i);
 
@@ -900,16 +900,16 @@ void REP::Translator::write(std::ostream &f_out)
 
         f_out << cc->volume << SEP;
 
-        for(const auto &e : cc->includedNode)
+        for (const auto& e : cc->includedNode)
             f_out << e << SEP;
 
-        for(const auto &e : cc->includedFace)
+        for (const auto& e : cc->includedFace)
             f_out << e << SEP;
 
-        for(const auto &e : cc->adjacentCell)
+        for (const auto& e : cc->adjacentCell)
             f_out << e << SEP;
 
-        for(const auto &e : cc->n)
+        for (const auto& e : cc->n)
         {
             f_out << e.x() << SEP;
             f_out << e.y() << SEP;
@@ -919,17 +919,17 @@ void REP::Translator::write(std::ostream &f_out)
         f_out << std::endl;
     }
 
-    for(size_t i = 0; i < N_ZONE; ++i)
+    for (size_t i = 0; i < N_ZONE; ++i)
     {
-        const auto &cz = m_zone.at(i);
+        const auto& cz = m_zone.at(i);
 
         f_out << cz.name << SEP << cz.includedFace.size() << SEP << cz.includedNode.size() << std::endl;
 
-        for(const auto &e : cz.includedFace)
+        for (const auto& e : cz.includedFace)
             f_out << e << SEP;
         f_out << std::endl;
 
-        for(const auto &e : cz.includedNode)
+        for (const auto& e : cz.includedNode)
             f_out << e << SEP;
         f_out << std::endl;
     }
