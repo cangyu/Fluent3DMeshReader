@@ -956,3 +956,19 @@ void REP::Translator::write(std::ostream& f_out)
         f_out << std::endl;
     }
 }
+
+void REP::Translator::write_for_metis(std::ostream& f_out)
+{
+    static const char SEP = ' ';
+
+    f_out << m_cell.size() << std::endl;
+
+    for (auto c : m_cell)
+    {
+        for (const auto& e : c->includedNode)
+        {
+            f_out << e << SEP;
+        }
+        f_out << std::endl;
+    }
+}

@@ -246,6 +246,8 @@ namespace REP
 
         void write(std::ostream& f_out);
 
+        void write_for_metis(std::ostream& f_out);
+
     private:
         void extract_node_basic_info(XF::NODE* curObj);
 
