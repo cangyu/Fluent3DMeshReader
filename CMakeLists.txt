@@ -13,8 +13,11 @@ target_link_libraries(XF PUBLIC VEC)
 add_library(REP src/rep.cc)
 target_link_libraries(REP PRIVATE XF)
 
-add_executable(CASE1 test/sp1.cc)
-target_link_libraries(CASE1 PUBLIC XF)
+add_executable(REPRODUCE app/reproduce.cc)
+target_link_libraries(REPRODUCE PUBLIC XF)
 
-add_executable(CASE2 test/sp2.cc)
-target_link_libraries(CASE2 PUBLIC REP)
+add_executable(ASCII_TRANSLATOR app/dump_ascii.cc)
+target_link_libraries(ASCII_TRANSLATOR PUBLIC REP)
+
+add_executable(BINARY_TRANSLATOR app/dump_binary.cc)
+target_link_libraries(BINARY_TRANSLATOR PUBLIC REP)

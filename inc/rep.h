@@ -244,9 +244,13 @@ namespace REP
 
         Translator(XF::MESH* mesh, std::ostream& operation_log);
 
-        void write(std::ostream& f_out);
+        virtual void write(std::ostream& f_out) = 0;
 
-        void write_for_metis(std::ostream& f_out);
+        void dump_cell_connectivity(std::ostream &f_out);
+
+        void dump_face_connectivity(std::ostream &f_out);
+
+        void dump_node_connectivity(std::ostream &f_out);
 
     private:
         void extract_node_basic_info(XF::NODE* curObj);

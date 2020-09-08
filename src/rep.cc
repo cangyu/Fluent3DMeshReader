@@ -843,121 +843,7 @@ REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
     operation_log << "Finished!" << std::endl;
 }
 
-void REP::Translator::write(std::ostream& f_out)
-{
-    static const char SEP = ' ';
-
-    const size_t N_NODE = m_node.size();
-    const size_t N_FACE = m_face.size();
-    const size_t N_CELL = m_cell.size();
-    const size_t N_ZONE = m_zone.size();
-
-    f_out << N_NODE << SEP << N_FACE << SEP << N_CELL << SEP << N_ZONE << std::endl;
-
-    for (size_t i = 0; i < N_NODE; ++i)
-    {
-        auto cn = m_node.at(i);
-
-        f_out << (cn->at_boundary ? 1 : 0) << SEP;
-
-        f_out << cn->coordinate.x() << SEP;
-        f_out << cn->coordinate.y() << SEP;
-        f_out << cn->coordinate.z() << SEP;
-
-        f_out << cn->adjacentNode.size() << SEP;
-        for (const auto& e : cn->adjacentNode)
-            f_out << e << SEP;
-
-        f_out << cn->dependentFace.size() << SEP;
-        for (const auto& e : cn->dependentFace)
-            f_out << e << SEP;
-
-        f_out << cn->dependentCell.size() << SEP;
-        for (const auto& e : cn->dependentCell)
-            f_out << e << SEP;
-
-        f_out << std::endl;
-    }
-
-    for (size_t i = 0; i < N_FACE; ++i)
-    {
-        auto cf = m_face.at(i);
-
-        f_out << (cf->at_boundary ? 1 : 0) << SEP;
-
-        f_out << cf->shape << SEP;
-
-        f_out << cf->centroid.x() << SEP;
-        f_out << cf->centroid.y() << SEP;
-        f_out << cf->centroid.z() << SEP;
-
-        f_out << cf->area << SEP;
-
-        for (const auto& e : cf->includedNode)
-            f_out << e << SEP;
-
-        f_out << cf->c0 << SEP;
-        f_out << cf->c1 << SEP;
-
-        f_out << cf->n01.x() << SEP;
-        f_out << cf->n01.y() << SEP;
-        f_out << cf->n01.z() << SEP;
-
-        f_out << cf->n10.x() << SEP;
-        f_out << cf->n10.y() << SEP;
-        f_out << cf->n10.z() << SEP;
-
-        f_out << std::endl;
-    }
-
-    for (size_t i = 0; i < N_CELL; ++i)
-    {
-        auto cc = m_cell.at(i);
-
-        f_out << cc->shape << SEP;
-
-        f_out << cc->centroid.x() << SEP;
-        f_out << cc->centroid.y() << SEP;
-        f_out << cc->centroid.z() << SEP;
-
-        f_out << cc->volume << SEP;
-
-        for (const auto& e : cc->includedNode)
-            f_out << e << SEP;
-
-        for (const auto& e : cc->includedFace)
-            f_out << e << SEP;
-
-        for (const auto& e : cc->adjacentCell)
-            f_out << e << SEP;
-
-        for (const auto& e : cc->n)
-        {
-            f_out << e.x() << SEP;
-            f_out << e.y() << SEP;
-            f_out << e.z() << SEP;
-        }
-
-        f_out << std::endl;
-    }
-
-    for (size_t i = 0; i < N_ZONE; ++i)
-    {
-        const auto& cz = m_zone.at(i);
-
-        f_out << cz.name << SEP << cz.includedFace.size() << SEP << cz.includedNode.size() << std::endl;
-
-        for (const auto& e : cz.includedFace)
-            f_out << e << SEP;
-        f_out << std::endl;
-
-        for (const auto& e : cz.includedNode)
-            f_out << e << SEP;
-        f_out << std::endl;
-    }
-}
-
-void REP::Translator::write_for_metis(std::ostream& f_out)
+void REP::Translator::dump_cell_connectivity(std::ostream& f_out)
 {
     static const char SEP = ' ';
 
@@ -969,6 +855,47 @@ void REP::Translator::write_for_metis(std::ostream& f_out)
         {
             f_out << e << SEP;
         }
+        f_out << std::endl;
+    }
+}
+
+void REP::Translator::dump_face_connectivity(std::ostream &f_out)
+{
+    static const char SEP = ' ';
+
+    f_out << m_face.size() << std::endl;
+
+    for(auto f : m_face)
+    {
+        f_out << f->includedNode.size() << SEP;
+        for(const auto &e : f->includedNode)
+        {
+            f_out << e << SEP;
+        }
+        f_out << f->c0 << SEP << f->c1 << std::endl;
+    }
+}
+
+void REP::Translator::dump_node_connectivity(std::ostream &f_out)
+{
+    static const char SEP = ' ';
+
+    f_out << m_node.size() << std::endl;
+
+    for(auto n : m_node)
+    {
+        f_out << n->adjacentNode.size() << SEP;
+        for(const auto &e : n->adjacentNode)
+            f_out << e << SEP;
+
+        f_out << n->dependentFace.size() << SEP;
+        for(const auto &e : n->dependentFace)
+            f_out << e << SEP;
+
+        f_out << n->dependentCell.size() << SEP;
+        for(const auto &e : n->dependentCell)
+            f_out << e << SEP;
+
         f_out << std::endl;
     }
 }
