@@ -1,7 +1,9 @@
-project(Fluent3DMeshReader)
-
 cmake_minimum_required(VERSION 3.10)
+
+project(Fluent3DMeshReader VERSION 1.0.0)
+
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(inc)
 
@@ -21,3 +23,12 @@ target_link_libraries(ASCII_TRANSLATOR PUBLIC REP)
 
 add_executable(BINARY_TRANSLATOR app/dump_binary.cc)
 target_link_libraries(BINARY_TRANSLATOR PUBLIC REP)
+
+install(TARGETS REPRODUCE
+        RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+
+install(TARGETS ASCII_TRANSLATOR
+        RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+
+install(TARGETS BINARY_TRANSLATOR
+        RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
