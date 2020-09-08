@@ -1,3 +1,4 @@
+#include <cstring>
 #include "rep.h"
 
 class AsciiWriter : public REP::Translator
