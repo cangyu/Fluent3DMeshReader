@@ -246,11 +246,11 @@ namespace REP
 
         virtual void write(std::ostream& f_out) = 0;
 
-        void dump_cell_connectivity(std::ostream &f_out);
+        void dump_cell_connectivity(std::ostream& f_out);
 
-        void dump_face_connectivity(std::ostream &f_out);
+        void dump_face_connectivity(std::ostream& f_out);
 
-        void dump_node_connectivity(std::ostream &f_out);
+        void dump_node_connectivity(std::ostream& f_out);
 
     private:
         void extract_node_basic_info(XF::NODE* curObj);

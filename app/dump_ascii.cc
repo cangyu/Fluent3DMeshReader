@@ -3,7 +3,7 @@
 class AsciiWriter : public REP::Translator
 {
 public:
-    AsciiWriter(XF::MESH *mesh, std::ostream &f_out)  : Translator(mesh, f_out) {}
+    AsciiWriter(XF::MESH* mesh, std::ostream& f_out) : Translator(mesh, f_out) {}
 
     void write(std::ostream& f_out) override;
 };
@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
     trans->write(f_out);
     f_out.close();
 
-    if(!cell_connectivity_path.empty())
+    if (!cell_connectivity_path.empty())
     {
         std::ofstream f_out0(cell_connectivity_path);
         if (f_out0.fail())
@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
         f_out0.close();
     }
 
-    if(!face_connectivity_path.empty())
+    if (!face_connectivity_path.empty())
     {
         std::ofstream f_out0(face_connectivity_path);
         if (f_out0.fail())
@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
         f_out0.close();
     }
 
-    if(!node_connectivity_path.empty())
+    if (!node_connectivity_path.empty())
     {
         std::ofstream f_out0(node_connectivity_path);
         if (f_out0.fail())

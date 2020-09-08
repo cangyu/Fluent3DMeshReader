@@ -5,7 +5,7 @@ int main(int argc, char* argv[])
     std::string input_mesh;
     std::string output_mesh;
 
-    if(argc == 3)
+    if (argc == 3)
     {
         input_mesh = argv[1];
         output_mesh = argv[2];

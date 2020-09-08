@@ -859,16 +859,16 @@ void REP::Translator::dump_cell_connectivity(std::ostream& f_out)
     }
 }
 
-void REP::Translator::dump_face_connectivity(std::ostream &f_out)
+void REP::Translator::dump_face_connectivity(std::ostream& f_out)
 {
     static const char SEP = ' ';
 
     f_out << m_face.size() << std::endl;
 
-    for(auto f : m_face)
+    for (auto f : m_face)
     {
         f_out << f->includedNode.size() << SEP;
-        for(const auto &e : f->includedNode)
+        for (const auto& e : f->includedNode)
         {
             f_out << e << SEP;
         }
@@ -876,24 +876,24 @@ void REP::Translator::dump_face_connectivity(std::ostream &f_out)
     }
 }
 
-void REP::Translator::dump_node_connectivity(std::ostream &f_out)
+void REP::Translator::dump_node_connectivity(std::ostream& f_out)
 {
     static const char SEP = ' ';
 
     f_out << m_node.size() << std::endl;
 
-    for(auto n : m_node)
+    for (auto n : m_node)
     {
         f_out << n->adjacentNode.size() << SEP;
-        for(const auto &e : n->adjacentNode)
+        for (const auto& e : n->adjacentNode)
             f_out << e << SEP;
 
         f_out << n->dependentFace.size() << SEP;
-        for(const auto &e : n->dependentFace)
+        for (const auto& e : n->dependentFace)
             f_out << e << SEP;
 
         f_out << n->dependentCell.size() << SEP;
-        for(const auto &e : n->dependentCell)
+        for (const auto& e : n->dependentCell)
             f_out << e << SEP;
 
         f_out << std::endl;
