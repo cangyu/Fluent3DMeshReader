@@ -639,14 +639,6 @@ void REP::Translator::calculate_face_unit_normal()
                 throw internal_error(-6, "Empty connectivity detected");
         }
     }
-
-    for (auto f : m_face)
-    {
-        static const auto EPS = std::numeric_limits<double>::epsilon();
-        const auto ans = f->n01.dot(f->n10);
-        if (std::fabs(ans + 1.0) > EPS)
-            throw internal_error(f->index, "Face unit norm vectors not match");
-    }
 }
 
 void REP::Translator::calculate_cell_geom_var()
@@ -834,8 +826,17 @@ REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
         curNode->dependentCell.assign(st2.begin(), st2.end());
     }
 
-    operation_log << "Calculating surface unit normal ..." << std::endl;
+    operation_log << "Calculating face unit normal ..." << std::endl;
     calculate_face_unit_normal();
+
+    static const auto EPS = 5.0 * std::numeric_limits<double>::epsilon();
+    operation_log << "Checking face unit normal with criterion set to " << EPS << " ..." << std::endl;
+    for (auto f : m_face)
+    {
+        const auto ans = f->n01.dot(f->n10) + 1.0;
+        if (std::fabs(ans) > EPS)
+            throw internal_error(f->index, "Face unit norm vectors not match, error=" + std::to_string(ans));
+    }
 
     operation_log << "Calculating CELL volume and centroid ..." << std::endl;
     calculate_cell_geom_var();
