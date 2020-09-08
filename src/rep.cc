@@ -800,6 +800,19 @@ REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
     operation_log << "Calculating geometric attributes of faces ..." << std::endl;
     calculate_face_geom_var();
 
+    double Smax = m_face[0]->area;
+    double Smin = Smax;
+    for (size_t i = 1; i < num_of_face; ++i)
+    {
+        const auto curS = m_face[i]->area;
+        if (curS < Smin)
+            Smin = curS;
+        if (curS > Smax)
+            Smax = curS;
+    }
+    operation_log << "Min face area=" << Smin << std::endl;
+    operation_log << "Max face area=" << Smax << std::endl;
+
     operation_log << "Counting adjacent nodes, dependent faces, and dependent cells of each node ..." << std::endl;
     /// Step1: Count all occurrence
     for (size_t i0 = 0; i0 < num_of_section; ++i0)
@@ -840,6 +853,22 @@ REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
 
     operation_log << "Calculating CELL volume and centroid ..." << std::endl;
     calculate_cell_geom_var();
+
+    double Vmax = m_cell[0]->volume;
+    double Vmin = Vmax;
+    double Vtotal = Vmax;
+    for (size_t i = 1; i < num_of_cell; ++i)
+    {
+        const auto curV = m_cell[i]->volume;
+        Vtotal += curV;
+        if (curV < Vmin)
+            Vmin = curV;
+        if (curV > Vmax)
+            Vmax = curV;
+    }
+    operation_log << "Min cell volume=" << Vmin << std::endl;
+    operation_log << "Max cell volume=" << Vmax << std::endl;
+    operation_log << "Total cell volume=" << Vtotal << std::endl;
 
     operation_log << "Finished!" << std::endl;
 }
