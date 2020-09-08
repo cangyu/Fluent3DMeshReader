@@ -1,5 +1,10 @@
 mesh
 
+.vs
+.vscode
+.idea
+cmake-*
+
 # Prerequisites
 *.d
 
