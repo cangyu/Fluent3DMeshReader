@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Fluent3DMeshReader VERSION 1.0.0)
+project(MeshReader VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,10 +18,10 @@ target_link_libraries(REP PRIVATE XF)
 add_executable(REPRODUCE app/reproduce.cc)
 target_link_libraries(REPRODUCE PUBLIC XF)
 
-add_executable(ASCII_TRANSLATOR app/dump_ascii.cc)
+add_executable(ASCII_TRANSLATOR app/ascii.cc)
 target_link_libraries(ASCII_TRANSLATOR PUBLIC REP)
 
-add_executable(BINARY_TRANSLATOR app/dump_binary.cc)
+add_executable(BINARY_TRANSLATOR app/binary.cc)
 target_link_libraries(BINARY_TRANSLATOR PUBLIC REP)
 
 install(TARGETS REPRODUCE
