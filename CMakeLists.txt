@@ -15,20 +15,20 @@ target_link_libraries(XF PUBLIC VEC)
 add_library(REP src/rep.cc)
 target_link_libraries(REP PRIVATE XF)
 
-add_executable(REPRODUCE app/reproduce.cc)
-target_link_libraries(REPRODUCE PUBLIC XF)
+add_executable(XF_REPRODUCE app/reproduce.cc)
+target_link_libraries(XF_REPRODUCE PUBLIC XF)
 
-add_executable(ASCII_TRANSLATOR app/ascii.cc)
-target_link_libraries(ASCII_TRANSLATOR PUBLIC REP)
+add_executable(XF_TRANSLATOR_ASCII app/ascii.cc)
+target_link_libraries(XF_TRANSLATOR_ASCII PUBLIC REP)
 
-add_executable(BINARY_TRANSLATOR app/binary.cc)
-target_link_libraries(BINARY_TRANSLATOR PUBLIC REP)
+add_executable(XF_TRANSLATOR_BINARY app/binary.cc)
+target_link_libraries(XF_TRANSLATOR_BINARY PUBLIC REP)
 
-install(TARGETS REPRODUCE
+install(TARGETS XF_REPRODUCE
         RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
-install(TARGETS ASCII_TRANSLATOR
+install(TARGETS XF_TRANSLATOR_ASCII
         RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
-install(TARGETS BINARY_TRANSLATOR
+install(TARGETS XF_TRANSLATOR_BINARY
         RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin)
