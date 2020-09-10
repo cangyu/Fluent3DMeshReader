@@ -533,7 +533,7 @@ namespace XF
 
         CONNECTIVITY() : c{ 0, 0 } {}
 
-        CONNECTIVITY(const CONNECTIVITY& rhs) : n(rhs.n), c{rhs.c[0], rhs.c[1]} {}
+        CONNECTIVITY(const CONNECTIVITY& rhs) : n(rhs.n), c{ rhs.c[0], rhs.c[1] } {}
 
         ~CONNECTIVITY() = default;
 
