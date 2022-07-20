@@ -676,6 +676,20 @@ void REP::Translator::calculate_cell_geom_var()
     }
 }
 
+void REP::Translator::update_node_boundary_flag()
+{
+    /* Reset */
+    for (auto p : m_node)
+        p->at_boundary = false;
+
+    /* Loop over all patch groups */
+    for (const auto &z : m_zone)
+    {
+        for (auto p : z.includedNode)
+            m_node[p-1]->at_boundary = true;
+    }
+}
+
 REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
 {
     operation_log << "======================================================================" << std::endl;
@@ -869,6 +883,9 @@ REP::Translator::Translator(XF::MESH* mesh, std::ostream& operation_log)
     operation_log << "Min cell volume=" << Vmin << std::endl;
     operation_log << "Max cell volume=" << Vmax << std::endl;
     operation_log << "Total cell volume=" << Vtotal << std::endl;
+
+    operation_log << "Ensuring boundary flag of each NODE ..." << std::endl;
+    update_node_boundary_flag();
 
     operation_log << "Finished!" << std::endl;
 }

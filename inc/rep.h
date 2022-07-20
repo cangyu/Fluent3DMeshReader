@@ -244,6 +244,18 @@ namespace REP
 
         Translator(XF::MESH* mesh, std::ostream& operation_log);
 
+        ~Translator()
+        {
+            for (auto p : m_node)
+                delete p;
+
+            for (auto p : m_face)
+                delete p;
+
+            for (auto p : m_cell)
+                delete p;
+        }
+
         virtual void write(std::ostream& f_out) = 0;
 
         void dump_cell_connectivity(std::ostream& f_out);
@@ -266,6 +278,8 @@ namespace REP
         void calculate_face_unit_normal();
 
         void calculate_cell_geom_var();
+
+        void update_node_boundary_flag();
     };
 }
 
